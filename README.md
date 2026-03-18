@@ -10,6 +10,7 @@ Loser is whoever hits the number 1.
 - `/dedi [user] [wager]`
 - `/dedidaily`
 - `/dediwho [user]`
+- `/dedirules`
 
 ## FEATURES
 - Simple and fun gameplay.
