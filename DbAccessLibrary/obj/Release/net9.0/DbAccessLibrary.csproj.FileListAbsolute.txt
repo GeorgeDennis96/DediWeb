@@ -1,0 +1,12 @@
+C:\Users\Dennis\source\repos\DbAccessLibrary\bin\Release\net9.0\DbAccessLibrary.deps.json
+C:\Users\Dennis\source\repos\DbAccessLibrary\bin\Release\net9.0\DbAccessLibrary.dll
+C:\Users\Dennis\source\repos\DbAccessLibrary\bin\Release\net9.0\DbAccessLibrary.pdb
+C:\Users\Dennis\source\repos\DbAccessLibrary\obj\Release\net9.0\DbAccessLibrary.csproj.AssemblyReference.cache
+C:\Users\Dennis\source\repos\DbAccessLibrary\obj\Release\net9.0\DbAccessLibrary.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Dennis\source\repos\DbAccessLibrary\obj\Release\net9.0\DbAccessLibrary.AssemblyInfoInputs.cache
+C:\Users\Dennis\source\repos\DbAccessLibrary\obj\Release\net9.0\DbAccessLibrary.AssemblyInfo.cs
+C:\Users\Dennis\source\repos\DbAccessLibrary\obj\Release\net9.0\DbAccessLibrary.csproj.CoreCompileInputs.cache
+C:\Users\Dennis\source\repos\DbAccessLibrary\obj\Release\net9.0\DbAccessLibrary.dll
+C:\Users\Dennis\source\repos\DbAccessLibrary\obj\Release\net9.0\refint\DbAccessLibrary.dll
+C:\Users\Dennis\source\repos\DbAccessLibrary\obj\Release\net9.0\DbAccessLibrary.pdb
+C:\Users\Dennis\source\repos\DbAccessLibrary\obj\Release\net9.0\ref\DbAccessLibrary.dll

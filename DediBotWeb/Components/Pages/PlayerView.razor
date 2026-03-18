@@ -1,0 +1,57 @@
+﻿@page "/player/{playerid}"
+@using DbAccessLibrary
+@using DediBotWeb.Common.Models;
+@using MudBlazor
+@inject NavigationManager NavigationManager
+@inject IPlayerData PlayerData
+
+<MudButton OnClick="NavToLeaderboard">Go Back</MudButton>
+
+<h3>@Player?.Username</h3>
+
+@if (Player is not null)
+{
+    <MudGrid>
+        <MudItem xs="12">
+            <MudItem xs="2">
+                <MudChart ChartType="ChartType.Donut" ChartSeries="@data.AsChartDataSet()" ChartOptions="@_chartOptions" Width="100%" Height="300px" ChartLabels="@labels">
+                    <CustomGraphics>
+                        <text class="mud-donut-text mud-typography-h3" x="30%" y="55%">@($"{@Player.WinRate}%")</text>
+                    </CustomGraphics>
+                </MudChart>
+            </MudItem>
+        </MudItem>
+    </MudGrid>
+}
+
+@code {
+    [Parameter]
+    public string playerid { get; set; }
+    private PlayerModel? Player { get; set; }
+    private double[] data;
+    public string[] labels = { "Wins", "Loss" };
+
+    private DonutChartOptions _chartOptions = new DonutChartOptions
+    {
+        ShowValues = true,
+        ShowLegend = true,
+        ChartPalette = new string[] { "green", "red" },
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        Player = await PlayerData.GetPlayerByInternalId(Guid.Parse(playerid));
+        if (Player is not null) data = GetDataFromPlayer(Player);
+    }
+
+    private double[] GetDataFromPlayer(PlayerModel player)
+    {
+        if (player is null) return new double[0];
+        return new double[] { player.Wins, player.Losses };
+    }
+
+    public void NavToLeaderboard()
+    {
+        NavigationManager.NavigateTo("/playerlist");
+    }
+}

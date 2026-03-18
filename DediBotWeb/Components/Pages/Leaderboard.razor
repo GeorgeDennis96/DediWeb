@@ -1,0 +1,29 @@
+﻿@page "/leaderboard/{amount:int}"
+@using DbAccessLibrary
+@using DediBotWeb.Common.Models;
+@using DediBotWeb.Services
+@using MudBlazor
+@inject IRankingService rankingService
+
+<h3>Leaderboard</h3>
+
+@* @foreach (var player in Players)
+{
+    
+} *@
+
+@code {
+
+    [Parameter, EditorRequired]
+    public int amount { get; set; }
+
+    private List<PlayerModel> Players = new List<PlayerModel>();
+    private PlayerModel TopPlayer { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (amount > 1000) amount = 1000; // Set a limit
+        Players = await rankingService.LoadTopPlayers(amount);
+        if (Players.Count > 0) TopPlayer = Players[0];
+    }
+}

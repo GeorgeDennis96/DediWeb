@@ -1,0 +1,12 @@
+C:\Users\Dennis\source\repos\DediBotWeb.Common\bin\Release\net9.0\DediBotWeb.Common.deps.json
+C:\Users\Dennis\source\repos\DediBotWeb.Common\bin\Release\net9.0\DediBotWeb.Common.dll
+C:\Users\Dennis\source\repos\DediBotWeb.Common\bin\Release\net9.0\DediBotWeb.Common.pdb
+C:\Users\Dennis\source\repos\DediBotWeb.Common\obj\Release\net9.0\DediBotWeb.Common.csproj.AssemblyReference.cache
+C:\Users\Dennis\source\repos\DediBotWeb.Common\obj\Release\net9.0\DediBotWeb.Common.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Dennis\source\repos\DediBotWeb.Common\obj\Release\net9.0\DediBotWeb.Common.AssemblyInfoInputs.cache
+C:\Users\Dennis\source\repos\DediBotWeb.Common\obj\Release\net9.0\DediBotWeb.Common.AssemblyInfo.cs
+C:\Users\Dennis\source\repos\DediBotWeb.Common\obj\Release\net9.0\DediBotWeb.Common.csproj.CoreCompileInputs.cache
+C:\Users\Dennis\source\repos\DediBotWeb.Common\obj\Release\net9.0\DediBotWeb.Common.dll
+C:\Users\Dennis\source\repos\DediBotWeb.Common\obj\Release\net9.0\refint\DediBotWeb.Common.dll
+C:\Users\Dennis\source\repos\DediBotWeb.Common\obj\Release\net9.0\DediBotWeb.Common.pdb
+C:\Users\Dennis\source\repos\DediBotWeb.Common\obj\Release\net9.0\ref\DediBotWeb.Common.dll

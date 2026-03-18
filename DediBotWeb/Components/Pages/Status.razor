@@ -1,0 +1,61 @@
+﻿@page "/status"
+@using DediBotWeb.Services
+@using Discord
+@using MudBlazor
+@rendermode InteractiveServer
+@inject DiscordService discordService
+
+<div class="m-2">
+    Current Status:
+    @switch (discordService.GetStatus())
+    {
+        case UserStatus.Online:
+            <b>Online</b>
+            break;
+        case UserStatus.Offline:
+            <b>Offline</b>
+            break;
+        case UserStatus.Idle:
+            <b>Idle</b>
+            break;
+        case UserStatus.AFK:
+            <b>AFK</b>
+            break;
+        case UserStatus.DoNotDisturb:
+            <b>Do Not Disturb</b>
+            break;
+        case UserStatus.Invisible:
+            <b>Invisible</b>
+            break;
+        default:
+            throw new Exception($"Unexpected enum value for status.");
+    }
+</div>
+
+<MudButtonGroup Class="m-2" Variant="Variant.Outlined" OverrideStyles="false">
+
+    <MudButton Disabled="IsOnlineStatus" Variant="Variant.Filled" onclick="(() => ChangeBotStatus(UserStatus.Online))" Color="MudBlazor.Color.Success">Online</MudButton>
+    <MudButton Disabled="IsIdleStatus" Variant="Variant.Filled" onclick="(() => ChangeBotStatus(UserStatus.Idle))" Color="MudBlazor.Color.Warning">Idle</MudButton>
+    <MudButton Disabled="IsDndStatus" Variant="Variant.Filled" onclick="(() => ChangeBotStatus(UserStatus.DoNotDisturb))" Color="MudBlazor.Color.Secondary">DND</MudButton>
+    <MudButton Disabled="IsInvisibleStatus" Variant="Variant.Filled" onclick="(() => ChangeBotStatus(UserStatus.Invisible))" Color="MudBlazor.Color.Primary">Invisible</MudButton>
+
+@*     
+     NOTE - Setting these statuses is not possible for bots, so we disable the buttons for them..
+    <MudButton Variant="Variant.Filled" onclick="(() => ChangeBotStatus(UserStatus.AFK))" Color="MudBlazor.Color.Primary">AFK</MudButton>
+    <MudButton Variant="Variant.Filled" onclick="(() => ChangeBotStatus(UserStatus.Offline))" Color="MudBlazor.Color.Primary">Offline</MudButton> 
+*@
+</MudButtonGroup>
+
+@code {
+
+    private UserStatus CurrentStatus => discordService.GetStatus();
+    private bool IsOnlineStatus => CurrentStatus == UserStatus.Online;
+    private bool IsIdleStatus => CurrentStatus == UserStatus.Idle;
+    private bool IsDndStatus => CurrentStatus == UserStatus.DoNotDisturb;
+    private bool IsInvisibleStatus => CurrentStatus == UserStatus.Invisible;
+
+    public async Task ChangeBotStatus(UserStatus status)
+    {
+        await discordService.SetBotStatus(status);
+    }
+}

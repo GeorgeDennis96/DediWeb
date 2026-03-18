@@ -1,0 +1,77 @@
+﻿@page "/playerlist"
+@using DbAccessLibrary
+@using DediBotWeb.Common.Models;
+@using MudBlazor
+@inject NavigationManager NavigationManager
+@inject IPlayerData PlayerData
+
+<h3>Leaderboard</h3>
+
+<MudTable Items="@Players" Breakpoint="Breakpoint.Sm" Dense="true" Hover="true" Bordered="true" Loading="@_loading" LoadingProgressColor="Color.Info" Filter="new Func<PlayerModel, bool>(FilterFunc1)" @bind-SelectedItem="selectedItem1">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Players</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>Internal Id</MudTh>
+        <MudTh>Discord Id</MudTh>
+        <MudTh>Username</MudTh>
+        <MudTh>Total Games Played</MudTh>
+        <MudTh>Balance</MudTh>
+        <MudTh>Action</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="InternalId">@context.InternalId</MudTd>
+        <MudTd DataLabel="DiscordId">@context.DiscordId</MudTd>
+        <MudTd DataLabel="Username">@context.Username</MudTd>
+        <MudTd DataLabel="TotalGamesPlayed">@context.TotalGamesPlayed</MudTd>
+        <MudTd DataLabel="Balance">@context.Balance</MudTd>
+        <MudTd DataLabel="Action">
+            <MudButton ButtonType="ButtonType.Button" Target="_blank" OnClick="() => NavTo(context.InternalId)">View</MudButton>
+        </MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[]{25}" HideRowsPerPage="true" />
+    </PagerContent>
+</MudTable>
+
+@code {
+
+    public List<PlayerModel> Players { get; set; } = new List<PlayerModel>();
+    bool _loading = true;
+    private string searchString1 = "";
+    private PlayerModel selectedItem1 = null;
+
+    private DonutChartOptions _options = new DonutChartOptions
+    {
+        ShowValues = true,
+        ChartPalette = new string[] { "green", "red" },
+        ShowToolTips = true,
+        FillOpacity = 0.8
+    };
+
+    // Mock data for now, but this should be replaced with actual data from the database.
+    protected override async Task OnInitializedAsync()
+    {
+        Players = await PlayerData.GetPlayers();
+        _loading = false;
+    }
+
+    private bool FilterFunc1(PlayerModel player) => FilterFunc(player, searchString1);
+    private bool FilterFunc(PlayerModel player, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if ($"{player.InternalId}".Contains(searchString))
+            return true;
+        if ($"{player.DiscordId}".Contains(searchString))
+            return true;
+        return false;
+    }
+
+    public void NavTo(Guid internalId)
+    {
+        NavigationManager.NavigateTo($"/player/{internalId}");
+    }
+}
