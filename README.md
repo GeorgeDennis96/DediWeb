@@ -1,15 +1,17 @@
 DeDi's death dice========================
 
+## SUMMARY
+
 DeDi's death dice is a discord interaction game where players roll a die to determine their fate. 
 The game is simple: each player takes turns rolling the initial number or the new number that has been rolled.
 Loser is whoever hits the number 1.
 
-## COMMANDS:
-`/dedi [user] [wager]`
-`/dedidaily`
-`/dediwho [user]`
+## COMMANDS
+- `/dedi [user] [wager]`
+- `/dedidaily`
+- `/dediwho [user]`
 
-FEATURES:
+## FEATURES
 - Simple and fun gameplay.
 - Players can earn points by winning duels.
 - Use slash command `/DediDaily` to claim your daily reward of 5000 points. (Work In Progress)
