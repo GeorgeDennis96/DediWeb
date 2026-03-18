@@ -4,7 +4,7 @@ DeDi's death dice is a discord interaction game where players roll a die to dete
 The game is simple: each player takes turns rolling the initial number or the new number that has been rolled.
 Loser is whoever hits the number 1.
 
-COMMANDS:
+## COMMANDS:
 `/dedi [user] [wager]`
 `/dedidaily`
 `/dediwho [user]`
