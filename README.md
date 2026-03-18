@@ -17,4 +17,4 @@ Loser is whoever hits the number 1.
 - Use slash command `/DediDaily` to claim your daily reward of 5000 points. (Work In Progress)
 - Players can choose their own wager to make the game more exciting.
 - The wager is the initial number you start the game with. You can choose any number you want, but it must be greater than 1 and you must have the balance to initiate the duel.
-- A leaderboard to track the top players and their points. (Work In Progress)
+- A leaderboard/ranking system to track the top players and their points. (Work In Progress)
