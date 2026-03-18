@@ -14,6 +14,7 @@ Loser is whoever hits the number 1.
 - `/dedirules`
 
 ## FEATURES
+- Dashboard to View player statistics.
 - Simple and fun gameplay.
 - Players can earn points by winning duels.
 - Use slash command `/DediDaily` to claim your daily reward of 5000 points. (Work In Progress)
