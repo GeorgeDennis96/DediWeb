@@ -7,6 +7,7 @@ The game is simple: each player takes turns rolling the initial number or the ne
 Loser is whoever hits the number 1.
 
 ## COMMANDS
+- `/dediregister`
 - `/dedi [user] [wager]`
 - `/dedidaily`
 - `/dediwho [user]`
