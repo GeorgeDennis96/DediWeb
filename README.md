@@ -1,4 +1,4 @@
-DeDi's death dice========================
+DeDi's Death Dice
 
 ## SUMMARY
 
