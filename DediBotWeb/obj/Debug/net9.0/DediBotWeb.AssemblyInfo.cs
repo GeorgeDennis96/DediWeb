@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DediBotWeb")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c96cd53f964f72da0e997b7c8869cc1ec83a6057")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b3d8e32d848be85de57c8e9c013ad6a6d1d402b9")]
 [assembly: System.Reflection.AssemblyProductAttribute("DediBotWeb")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DediBotWeb")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
