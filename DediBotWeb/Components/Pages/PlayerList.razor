@@ -43,14 +43,6 @@
     private string searchString1 = "";
     private PlayerModel selectedItem1 = null;
 
-    private DonutChartOptions _options = new DonutChartOptions
-    {
-        ShowValues = true,
-        ChartPalette = new string[] { "green", "red" },
-        ShowToolTips = true,
-        FillOpacity = 0.8
-    };
-
     // Mock data for now, but this should be replaced with actual data from the database.
     protected override async Task OnInitializedAsync()
     {
@@ -66,6 +58,8 @@
         if ($"{player.InternalId}".Contains(searchString))
             return true;
         if ($"{player.DiscordId}".Contains(searchString))
+            return true;
+        if ($"{player.Username}".Contains(searchString))
             return true;
         return false;
     }

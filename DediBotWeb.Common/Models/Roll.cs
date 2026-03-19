@@ -1,4 +1,4 @@
-﻿namespace DediBotWeb.Common
+﻿namespace DediBotWeb.Common.Models
 {
     public class Roll
     {

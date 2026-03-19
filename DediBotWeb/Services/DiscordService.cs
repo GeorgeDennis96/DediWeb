@@ -1,5 +1,4 @@
 ﻿using DbAccessLibrary;
-using DediBotWeb.Common;
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
@@ -46,7 +45,7 @@ namespace DediBotWeb.Services
         {
             if (SlashCommands.Count() == 0)
             {
-                Console.WriteLine("Could not create slash commands because there were none.");
+                Console.WriteLine("Could not create slash commands because there were none to add.");
                 return;
             }
 

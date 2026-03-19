@@ -10,4 +10,8 @@
     <PackageReference Include="Discord.Net" Version="3.18.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\Config\" />
+  </ItemGroup>
+
 </Project>

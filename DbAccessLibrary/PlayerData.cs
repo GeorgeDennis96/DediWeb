@@ -54,7 +54,8 @@ namespace DbAccessLibrary
         public async Task<List<PlayerModel>> GetTopPlayers(int amount = 100)
         {
             string sql = $"SELECT TOP {amount} * FROM dbo.Player ORDER BY Balance DESC";
-            return await _db.LoadData<PlayerModel, dynamic>(sql, new { });
+            var result = await _db.LoadData<PlayerModel, dynamic>(sql, new { });
+            return result;
         }
     }
 }

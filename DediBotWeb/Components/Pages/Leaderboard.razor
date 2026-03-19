@@ -4,20 +4,36 @@
 @using DediBotWeb.Services
 @using MudBlazor
 @inject IRankingService rankingService
+@inject NavigationManager navManager
 
 <h3>Leaderboard</h3>
 
-@* @foreach (var player in Players)
+@if (Players is not null || TopPlayer is not null)
 {
-    
-} *@
+    <MudGrid Justify="Justify.Center">
+        <MudItem xs="1">
+            <MudCard>
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.body1">@TopPlayer.Username</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardActions>
+                    <MudIconButton Icon="@Icons.Material.Filled.Pageview" OnClick="(() => ViewPlayer(TopPlayer.InternalId))" Color="Color.Default" />
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+}
+
+
 
 @code {
 
     [Parameter, EditorRequired]
     public int amount { get; set; }
 
-    private List<PlayerModel> Players = new List<PlayerModel>();
+    private List<PlayerModel> Players { get; set; }
     private PlayerModel TopPlayer { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -25,5 +41,10 @@
         if (amount > 1000) amount = 1000; // Set a limit
         Players = await rankingService.LoadTopPlayers(amount);
         if (Players.Count > 0) TopPlayer = Players[0];
+    }
+
+    public void ViewPlayer(Guid id)
+    {
+        navManager.NavigateTo($"/player/{id}");
     }
 }

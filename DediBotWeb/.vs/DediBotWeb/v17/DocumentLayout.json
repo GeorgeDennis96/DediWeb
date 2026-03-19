@@ -3,6 +3,25 @@
   "WorkspaceRootPath": "C:\\Users\\Dennis\\source\\repos\\DediWeb\\DediBotWeb\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{A3F6E0BA-D360-4B76-A6C8-CCE491E3B6E7}|DediBotWeb.csproj|c:\\users\\dennis\\source\\repos\\dediweb\\dedibotweb\\components\\pages\\playerlist.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A3F6E0BA-D360-4B76-A6C8-CCE491E3B6E7}|DediBotWeb.csproj|solutionrelative:components\\pages\\playerlist.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A3F6E0BA-D360-4B76-A6C8-CCE491E3B6E7}|DediBotWeb.csproj|c:\\users\\dennis\\source\\repos\\dediweb\\dedibotweb\\components\\layout\\navmenu.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A3F6E0BA-D360-4B76-A6C8-CCE491E3B6E7}|DediBotWeb.csproj|solutionrelative:components\\layout\\navmenu.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A3F6E0BA-D360-4B76-A6C8-CCE491E3B6E7}|DediBotWeb.csproj|c:\\users\\dennis\\source\\repos\\dediweb\\dedibotweb\\components\\pages\\leaderboard.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A3F6E0BA-D360-4B76-A6C8-CCE491E3B6E7}|DediBotWeb.csproj|solutionrelative:components\\pages\\leaderboard.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A3F6E0BA-D360-4B76-A6C8-CCE491E3B6E7}|DediBotWeb.csproj|c:\\users\\dennis\\source\\repos\\dediweb\\dedibotweb\\components\\pages\\playerview.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A3F6E0BA-D360-4B76-A6C8-CCE491E3B6E7}|DediBotWeb.csproj|solutionrelative:components\\pages\\playerview.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{12BABB0B-2A1F-4416-B67D-0F40A1B19A5F}|..\\DbAccessLibrary\\DbAccessLibrary.csproj|c:\\users\\dennis\\source\\repos\\dediweb\\dbaccesslibrary\\playerdata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{A3F6E0BA-D360-4B76-A6C8-CCE491E3B6E7}|DediBotWeb.csproj|c:\\users\\dennis\\source\\repos\\dediweb\\dedibotweb\\services\\discordservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A3F6E0BA-D360-4B76-A6C8-CCE491E3B6E7}|DediBotWeb.csproj|solutionrelative:services\\discordservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -15,28 +34,8 @@
       "RelativeMoniker": "D:0:0:{A3F6E0BA-D360-4B76-A6C8-CCE491E3B6E7}|DediBotWeb.csproj|solutionrelative:dotnet-tools.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A3F6E0BA-D360-4B76-A6C8-CCE491E3B6E7}|DediBotWeb.csproj|c:\\users\\dennis\\source\\repos\\dediweb\\dedibotweb\\services\\rankingservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A3F6E0BA-D360-4B76-A6C8-CCE491E3B6E7}|DediBotWeb.csproj|solutionrelative:services\\rankingservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A3F6E0BA-D360-4B76-A6C8-CCE491E3B6E7}|DediBotWeb.csproj|c:\\users\\dennis\\source\\repos\\dediweb\\dedibotweb\\components\\pages\\playerview.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{A3F6E0BA-D360-4B76-A6C8-CCE491E3B6E7}|DediBotWeb.csproj|solutionrelative:components\\pages\\playerview.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A3F6E0BA-D360-4B76-A6C8-CCE491E3B6E7}|DediBotWeb.csproj|c:\\users\\dennis\\source\\repos\\dediweb\\dedibotweb\\components\\pages\\playerlist.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{A3F6E0BA-D360-4B76-A6C8-CCE491E3B6E7}|DediBotWeb.csproj|solutionrelative:components\\pages\\playerlist.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A3F6E0BA-D360-4B76-A6C8-CCE491E3B6E7}|DediBotWeb.csproj|c:\\users\\dennis\\source\\repos\\dediweb\\dedibotweb\\components\\pages\\leaderboard.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{A3F6E0BA-D360-4B76-A6C8-CCE491E3B6E7}|DediBotWeb.csproj|solutionrelative:components\\pages\\leaderboard.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{A3F6E0BA-D360-4B76-A6C8-CCE491E3B6E7}|DediBotWeb.csproj|c:\\users\\dennis\\source\\repos\\dediweb\\dedibotweb\\services\\irankingservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A3F6E0BA-D360-4B76-A6C8-CCE491E3B6E7}|DediBotWeb.csproj|solutionrelative:services\\irankingservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A3F6E0BA-D360-4B76-A6C8-CCE491E3B6E7}|DediBotWeb.csproj|c:\\users\\dennis\\source\\repos\\dediweb\\dedibotweb\\components\\layout\\navmenu.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{A3F6E0BA-D360-4B76-A6C8-CCE491E3B6E7}|DediBotWeb.csproj|solutionrelative:components\\layout\\navmenu.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A3F6E0BA-D360-4B76-A6C8-CCE491E3B6E7}|DediBotWeb.csproj|c:\\users\\dennis\\source\\repos\\dediweb\\dedibotweb\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
@@ -95,7 +94,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 15,
+          "SelectedChildIndex": 22,
           "Children": [
             {
               "$type": "Bookmark",
@@ -147,15 +146,16 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "dotnet-tools.json",
-              "DocumentMoniker": "C:\\Users\\Dennis\\source\\repos\\DediWeb\\DediBotWeb\\dotnet-tools.json",
-              "RelativeDocumentMoniker": "dotnet-tools.json",
-              "ToolTip": "C:\\Users\\Dennis\\source\\repos\\DediWeb\\DediBotWeb\\dotnet-tools.json",
-              "RelativeToolTip": "dotnet-tools.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-03-18T14:00:46.894Z"
+              "DocumentIndex": 4,
+              "Title": "PlayerData.cs",
+              "DocumentMoniker": "C:\\Users\\Dennis\\source\\repos\\DediWeb\\DbAccessLibrary\\PlayerData.cs",
+              "RelativeDocumentMoniker": "..\\DbAccessLibrary\\PlayerData.cs",
+              "ToolTip": "C:\\Users\\Dennis\\source\\repos\\DediWeb\\DbAccessLibrary\\PlayerData.cs",
+              "RelativeToolTip": "..\\DbAccessLibrary\\PlayerData.cs",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAowDgAAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-19T16:25:32.688Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -183,40 +183,28 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 5,
               "Title": "DiscordService.cs",
               "DocumentMoniker": "C:\\Users\\Dennis\\source\\repos\\DediWeb\\DediBotWeb\\Services\\DiscordService.cs",
               "RelativeDocumentMoniker": "Services\\DiscordService.cs",
               "ToolTip": "C:\\Users\\Dennis\\source\\repos\\DediWeb\\DediBotWeb\\Services\\DiscordService.cs",
               "RelativeToolTip": "Services\\DiscordService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABsAAABIAAAAAAAAAA==",
+              "ViewState": "AgIAABAAAAAAAAAAAAAQwC4AAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-12T19:11:26.273Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-12T19:11:26.273Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 2,
               "Title": "Leaderboard.razor",
               "DocumentMoniker": "C:\\Users\\Dennis\\source\\repos\\DediWeb\\DediBotWeb\\Components\\Pages\\Leaderboard.razor",
               "RelativeDocumentMoniker": "Components\\Pages\\Leaderboard.razor",
               "ToolTip": "C:\\Users\\Dennis\\source\\repos\\DediWeb\\DediBotWeb\\Components\\Pages\\Leaderboard.razor",
               "RelativeToolTip": "Components\\Pages\\Leaderboard.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABkAAAA+AAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABkAAAAOAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-03-02T18:20:23.668Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "RankingService.cs",
-              "DocumentMoniker": "C:\\Users\\Dennis\\source\\repos\\DediWeb\\DediBotWeb\\Services\\RankingService.cs",
-              "RelativeDocumentMoniker": "Services\\RankingService.cs",
-              "ToolTip": "C:\\Users\\Dennis\\source\\repos\\DediWeb\\DediBotWeb\\Services\\RankingService.cs",
-              "RelativeToolTip": "Services\\RankingService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAqwA0AAAApAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-13T17:23:02.569Z"
+              "WhenOpened": "2026-03-02T18:20:23.668Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -256,15 +244,16 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 1,
               "Title": "NavMenu.razor",
               "DocumentMoniker": "C:\\Users\\Dennis\\source\\repos\\DediWeb\\DediBotWeb\\Components\\Layout\\NavMenu.razor",
               "RelativeDocumentMoniker": "Components\\Layout\\NavMenu.razor",
               "ToolTip": "C:\\Users\\Dennis\\source\\repos\\DediWeb\\DediBotWeb\\Components\\Layout\\NavMenu.razor",
               "RelativeToolTip": "Components\\Layout\\NavMenu.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAABCAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACYAAAA8AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-03-01T16:38:13.383Z"
+              "WhenOpened": "2026-03-01T16:38:13.383Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -280,19 +269,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 0,
               "Title": "PlayerList.razor",
               "DocumentMoniker": "C:\\Users\\Dennis\\source\\repos\\DediWeb\\DediBotWeb\\Components\\Pages\\PlayerList.razor",
               "RelativeDocumentMoniker": "Components\\Pages\\PlayerList.razor",
               "ToolTip": "C:\\Users\\Dennis\\source\\repos\\DediWeb\\DediBotWeb\\Components\\Pages\\PlayerList.razor",
               "RelativeToolTip": "Components\\Pages\\PlayerList.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAgAAAAAAAAAA==",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAAADAAAAAwAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-03-11T16:59:19.978Z"
+              "WhenOpened": "2026-03-11T16:59:19.978Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "IRankingService.cs",
               "DocumentMoniker": "C:\\Users\\Dennis\\source\\repos\\DediWeb\\DediBotWeb\\Services\\IRankingService.cs",
               "RelativeDocumentMoniker": "Services\\IRankingService.cs",
@@ -304,7 +294,32 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
+              "Title": "PlayerView.razor",
+              "DocumentMoniker": "C:\\Users\\Dennis\\source\\repos\\DediWeb\\DediBotWeb\\Components\\Pages\\PlayerView.razor",
+              "RelativeDocumentMoniker": "Components\\Pages\\PlayerView.razor",
+              "ToolTip": "C:\\Users\\Dennis\\source\\repos\\DediWeb\\DediBotWeb\\Components\\Pages\\PlayerView.razor",
+              "RelativeToolTip": "Components\\Pages\\PlayerView.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAYAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-03-11T16:27:46.882Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "dotnet-tools.json",
+              "DocumentMoniker": "C:\\Users\\Dennis\\source\\repos\\DediWeb\\DediBotWeb\\dotnet-tools.json",
+              "RelativeDocumentMoniker": "dotnet-tools.json",
+              "ToolTip": "C:\\Users\\Dennis\\source\\repos\\DediWeb\\DediBotWeb\\dotnet-tools.json",
+              "RelativeToolTip": "dotnet-tools.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-03-18T14:00:46.894Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\Users\\Dennis\\source\\repos\\DediWeb\\DediBotWeb\\appsettings.json",
               "RelativeDocumentMoniker": "appsettings.json",
@@ -325,18 +340,6 @@
               "ViewState": "AgIAAAwAAAAAAAAAAAAawCsAAAA0AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-03-11T14:56:21.605Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "PlayerView.razor",
-              "DocumentMoniker": "C:\\Users\\Dennis\\source\\repos\\DediWeb\\DediBotWeb\\Components\\Pages\\PlayerView.razor",
-              "RelativeDocumentMoniker": "Components\\Pages\\PlayerView.razor",
-              "ToolTip": "C:\\Users\\Dennis\\source\\repos\\DediWeb\\DediBotWeb\\Components\\Pages\\PlayerView.razor",
-              "RelativeToolTip": "Components\\Pages\\PlayerView.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAgAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-03-11T16:27:46.882Z"
             },
             {
               "$type": "Document",

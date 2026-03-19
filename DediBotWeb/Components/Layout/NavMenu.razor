@@ -1,4 +1,6 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using MudBlazor;
+
+@* <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">DediBotWeb</a>
     </div>
@@ -32,9 +34,15 @@
             </NavLink>
         </div>
     </nav>
-</div>
+</div> *@
 
-@code{
-    private string LeaderboardDefaultURL { get; set; } = "leaderboard/100";
-}
-
+<MudPaper Width="250px" Class="py-3" Style="border-radius:0;" Elevation="0">
+    <MudNavMenu Rounded="false" Bordered="false">
+        <MudText Typo="Typo.h6" Class="px-4">Dedi</MudText>
+        <MudDivider Class="my-2"/>
+        <MudNavLink Icon="@Icons.Material.Outlined.Home" Match="NavLinkMatch.All" Href="/">Home</MudNavLink>
+        <MudNavLink Icon="@Icons.Material.Outlined.Settings" Href="/status">Settings</MudNavLink>
+        <MudNavLink Icon="@Icons.Material.Outlined.Leaderboard" Href="/leaderboard/100">Leaderboard</MudNavLink>
+        <MudNavLink Icon="@Icons.Material.Outlined.ViewList" Href="/playerlist">Users</MudNavLink>
+    </MudNavMenu>
+</MudPaper>
