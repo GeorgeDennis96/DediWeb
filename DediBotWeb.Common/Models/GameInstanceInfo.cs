@@ -1,32 +1,27 @@
-﻿using Discord;
-using Discord.WebSocket;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Discord.WebSocket;
 
 namespace DediBotWeb.Common.Models
 {
     public class GameInstanceInfo
     {
-        public GameInstanceInfo(int initialNumber, SocketUser initialChallenger, SocketUser challengedUser)
-        {
-            InitialNumber = initialNumber;
-            InitialChallenger = initialChallenger;
-            ChallengedUser = challengedUser;
-
-            SetupButtons();
-        }
-
         public Guid ID { get; private set; } = Guid.NewGuid();
-        public string AcceptButtonID { get; set; }
-        public string DeclineButtonID { get; set; }
+        public string AcceptButtonID { get; set; } = $"accept-{Guid.NewGuid()}";
+        public string DeclineButtonID { get; set; } = $"decline-{Guid.NewGuid()}";
         public SocketUser InitialChallenger { get; private set; }
         public SocketUser ChallengedUser { get; private set; }
         public int InitialNumber { get; private set; }
         public SocketUser WhoRollsNext { get; private set; }
         public List<Roll> RollHistory { get; private set; } = new List<Roll>();
+        public int PotentialWinnings { get; private set; }
+        public int BetWinnings { get; private set; }
+        public GameState State { get; private set; } = GameState.Pending;
+
+        public GameInstanceInfo(int initialNumber, SocketUser initialChallenger, SocketUser challengedUser)
+        {
+            InitialNumber = initialNumber;
+            InitialChallenger = initialChallenger;
+            ChallengedUser = challengedUser;
+        }
 
         public GameInstanceInfo AddRollHistory(int newNumber, ulong whoRolled)
         {
@@ -51,11 +46,28 @@ namespace DediBotWeb.Common.Models
             }
         }
 
-        private void SetupButtons()
+        public void SetState(GameState newState)
         {
-            // Create the unique id for each button..
-            AcceptButtonID = $"accept-{Guid.NewGuid()}";
-            DeclineButtonID = $"decline-{Guid.NewGuid()}";
+            State = newState;
+
+            Console.WriteLine($"Game {ID} state changed to {State}.");
+        }
+
+        public void AddBet(int amount)
+        {
+            BetWinnings += amount;
+        }
+
+        public void AddPotentialWinnings(int amount)
+        {
+            PotentialWinnings += amount;
+        }
+
+        public enum GameState
+        {
+            Pending,
+            InProgress,
+            Completed
         }
     }
 }

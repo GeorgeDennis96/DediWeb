@@ -23,3 +23,8 @@ C:\Users\Dennis\source\repos\DediWeb\DediBotWeb.Common\obj\Debug\net9.0\DediBotW
 C:\Users\Dennis\source\repos\DediWeb\DediBotWeb.Common\obj\Debug\net9.0\refint\DediBotWeb.Common.dll
 C:\Users\Dennis\source\repos\DediWeb\DediBotWeb.Common\obj\Debug\net9.0\DediBotWeb.Common.pdb
 C:\Users\Dennis\source\repos\DediWeb\DediBotWeb.Common\obj\Debug\net9.0\ref\DediBotWeb.Common.dll
+C:\Users\Dennis\source\repos\DediWeb\DediBotWeb.Common\bin\Debug\net9.0\Microsoft.Azure.Cosmos.ServiceInterop.dll
+C:\Users\Dennis\source\repos\DediWeb\DediBotWeb.Common\bin\Debug\net9.0\Cosmos.CRTCompat.dll
+C:\Users\Dennis\source\repos\DediWeb\DediBotWeb.Common\bin\Debug\net9.0\msvcp140.dll
+C:\Users\Dennis\source\repos\DediWeb\DediBotWeb.Common\bin\Debug\net9.0\vcruntime140.dll
+C:\Users\Dennis\source\repos\DediWeb\DediBotWeb.Common\bin\Debug\net9.0\vcruntime140_1.dll

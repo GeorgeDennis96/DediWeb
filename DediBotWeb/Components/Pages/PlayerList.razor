@@ -1,11 +1,8 @@
 ﻿@page "/playerlist"
 @using DbAccessLibrary
-@using DediBotWeb.Common.Models;
-@using MudBlazor
+@using DediBotWeb.Common.Models
 @inject NavigationManager NavigationManager
-@inject IPlayerData PlayerData
-
-<h3>Leaderboard</h3>
+@inject IPlayerRepo PlayerData
 
 <MudTable Items="@Players" Breakpoint="Breakpoint.Sm" Dense="true" Hover="true" Bordered="true" Loading="@_loading" LoadingProgressColor="Color.Info" Filter="new Func<PlayerModel, bool>(FilterFunc1)" @bind-SelectedItem="selectedItem1">
     <ToolBarContent>
@@ -40,13 +37,13 @@
 
     public List<PlayerModel> Players { get; set; } = new List<PlayerModel>();
     bool _loading = true;
-    private string searchString1 = "";
+    private string searchString1 = string.Empty;
     private PlayerModel selectedItem1 = null;
 
     // Mock data for now, but this should be replaced with actual data from the database.
     protected override async Task OnInitializedAsync()
     {
-        Players = await PlayerData.GetPlayers();
+        Players = await PlayerData.GetPlayersAsync();
         _loading = false;
     }
 

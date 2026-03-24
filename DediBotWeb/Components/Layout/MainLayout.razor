@@ -1,5 +1,4 @@
 ﻿@inherits LayoutComponentBase
-@using MudBlazor
 
 @* Required *@
 <MudThemeProvider />
@@ -11,20 +10,32 @@
 @* Needed for snackbars *@
 <MudSnackbarProvider />
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-
-    <main>
-        <article class="content px-4">
+<MudLayout>
+    <MudAppBar Fixed="true" Elevation="1">
+        <MudText Align="@Align.Center">Dedi Dashboard</MudText>
+    </MudAppBar>
+    <MudDrawer @bind-Open="@_drawerOpen" Fixed="true" ClipMode="@DrawerClipMode.Always" Variant="@DrawerVariant.Mini" OpenMiniOnHover="true" Breakpoint="Breakpoint.None">
+        <MudNavMenu>
+            <MudNavLink Icon="@Icons.Material.Outlined.Home" Match="NavLinkMatch.All" Href="/">Home</MudNavLink>
+            <MudNavGroup  Icon="@Icons.Material.Outlined.Settings" HideExpandIcon="DisableIfNotHover()" Title="Settings">
+                <MudNavLink Href="/status">Status</MudNavLink>
+            </MudNavGroup>
+            <MudNavLink Icon="@Icons.Material.Outlined.Leaderboard" Href="/leaderboard/100">Leaderboard</MudNavLink>
+            <MudNavLink Icon="@Icons.Material.Outlined.ViewList" Href="/playerlist">Users</MudNavLink>
+        </MudNavMenu>
+    </MudDrawer>
+    <MudMainContent>
+        <div class="py-3 px-3">
             @Body
-        </article>
-    </main>
-</div>
+        </div>
+    </MudMainContent>
+</MudLayout>
 
-<div id="blazor-error-ui" data-nosnippet>
-    An unhandled error has occurred.
-    <a href="." class="reload">Reload</a>
-    <span class="dismiss">🗙</span>
-</div>
+@code{
+    bool _drawerOpen = false;
+
+    public bool DisableIfNotHover()
+    {
+        return !_drawerOpen;
+    }
+}

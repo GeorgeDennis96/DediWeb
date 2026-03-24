@@ -8,7 +8,7 @@
         public Roll(ulong whoRolled, int maxValue)
         {
             WhoRolled = whoRolled;
-            RolledNumber = Random.Shared.Next(1, maxValue);
+            RolledNumber = Random.Shared.Next(1, maxValue+1);
         }
     }
 }

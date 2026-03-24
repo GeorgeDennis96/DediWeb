@@ -1,7 +1,6 @@
 ﻿@page "/status"
 @using DediBotWeb.Services
 @using Discord
-@using MudBlazor
 @rendermode InteractiveServer
 @inject DiscordService discordService
 
@@ -56,6 +55,6 @@
 
     public async Task ChangeBotStatus(UserStatus status)
     {
-        await discordService.SetBotStatus(status);
+        await discordService.SetStatus(status);
     }
 }

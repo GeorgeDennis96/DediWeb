@@ -1,19 +1,23 @@
 ﻿using DbAccessLibrary;
+using DediBotWeb.Common.Models;
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
-using DediBotWeb.Common.Models;
-using MudBlazor;
+using System.Net;
+using System.Reflection;
 
 namespace DediBotWeb.Services
 {
     public class DiscordService : IDiscordService
     {
         private readonly DiscordSocketClient _client;
-        private readonly IPlayerData _dbDataAccess;
+        private readonly IPlayerRepo _dbDataAccess;
         private List<SlashCommand> SlashCommands = new List<SlashCommand>();
         private static List<GameInstanceInfo> InstanceInfos = new List<GameInstanceInfo>();
-        public DiscordService(DiscordSocketClient client, IPlayerData dbDataAccess)
+        private const int DailyRewardAmount = 10000;
+        private const int WeekendDailyRewardMultiplier = 2;
+
+        public DiscordService(DiscordSocketClient client, IPlayerRepo dbDataAccess)
         {
             _client = client;
             _dbDataAccess = dbDataAccess;
@@ -30,7 +34,12 @@ namespace DediBotWeb.Services
             _client.SlashCommandExecuted += SlashCommandHandler;
             _client.InteractionCreated += ClientOnInteractionCreatedAsync;
 
-            var _interactionService = new InteractionService(_client.Rest);
+            InteractionService _interactionService = new InteractionService(_client.Rest);
+
+            Discord.Rest.RestApplication appInfo = await _client.GetApplicationInfoAsync();
+            Console.WriteLine($"APP ID: {appInfo.Id}");
+
+            await this.BuildSlashCommands();
         }
 
         private static Task Log_Async(LogMessage log)
@@ -51,7 +60,13 @@ namespace DediBotWeb.Services
 
             Task.Delay(5000).Wait(); // Wait for discord client connection to be established before creating commands..
 
-            foreach (var slashCommand in SlashCommands)
+            // Delete to refresh the commands..
+            foreach (SocketGuild? guild in _client.Guilds)
+            {
+                await guild.DeleteApplicationCommandsAsync();
+            }
+
+            foreach (SlashCommand slashCommand in SlashCommands)
             {
                 var slashCommandInitiate = new Discord.SlashCommandBuilder()
                 .WithName(slashCommand.Name)
@@ -66,7 +81,6 @@ namespace DediBotWeb.Services
                 {
                     guild.CreateApplicationCommandAsync(slashCommandInitiate.Build());
                 });
-
             }
         }
 
@@ -94,6 +108,20 @@ namespace DediBotWeb.Services
             deathDiceCommand.AddOption("opponent", "The user you wish to challenge.", ApplicationCommandOptionType.User, true);
             deathDiceCommand.AddOption("wager", "The wager & starting amount of the death dice.", ApplicationCommandOptionType.Number, true);
             SlashCommands.Add(deathDiceCommand);
+
+            SlashCommand tradeCommand = new SlashCommand("deditrade", "Trade points with another user.", true);
+            tradeCommand.AddOption("tradepartner", "The user you wish to trade with.", ApplicationCommandOptionType.User, true);
+            tradeCommand.AddOption("amount", "The amount of points you wish to trade.", ApplicationCommandOptionType.Number, true);
+            SlashCommands.Add(tradeCommand);
+
+            SlashCommand betCommand = new SlashCommand("dedibet", "Bet on a game.", true);
+            betCommand.AddOption("id", "The game ID.", ApplicationCommandOptionType.String, true);
+            betCommand.AddOption("amount", "the amount you would like to bet.", ApplicationCommandOptionType.Integer, true);
+            SlashCommands.Add(betCommand);
+
+            SlashCommand rankingCommand = new SlashCommand("dedirankings", "Display the top 10 ranking players.", true);
+            SlashCommands.Add(rankingCommand);
+
         }
 
         private async Task SlashCommandHandler(SocketSlashCommand command)
@@ -115,9 +143,87 @@ namespace DediBotWeb.Services
                 case "dedirules":
                     await HandleRulesCommand(command);
                     break;
+                case "deditrade":
+                    await HandleTradeCommand(command);
+                    break;
+                case "dedirankings":
+                    await HandleRankingCommand(command);
+                    break;
+                case "dedibet":
+                    await HandleBettingCommand(command);
+                    break;
                 default:
                     await HandleUnkownCommand(command);
                     break;
+            }
+        }
+
+        private async Task HandleBettingCommand(SocketSlashCommand command)
+        {
+            string gameId = (string)command.Data.Options.Where(x => x.Name == "id").FirstOrDefault().Value;
+            GameInstanceInfo gameInfo = InstanceInfos.Where(i => i.ID.ToString() == gameId).FirstOrDefault();
+
+            double amount = (double)command.Data.Options.Where(x => x.Name == "amount").FirstOrDefault().Value;
+            int bet = (int)amount;
+
+
+        }
+
+        private async Task HandleRankingCommand(SocketSlashCommand command)
+        {
+            var builder = new ComponentBuilderV2();
+
+            var topPlayers = await _dbDataAccess.GetTopPlayersAsync(10);
+
+            for (int i = 0; i < topPlayers.Count; i++)
+            {
+                int rankNum = i + 1;
+                builder.WithTextDisplay($"Rank #{rankNum} - {topPlayers[i].Username} - {topPlayers[i].WinRate}% - {topPlayers[i].Balance} points.");
+            }
+            await command.RespondAsync(components: builder.Build());
+        }
+
+        private async Task HandleTradeCommand(SocketSlashCommand command)
+        {
+            SocketUser tradePartner = (SocketUser)command.Data.Options.Where(x => x.Name == "tradepartner").FirstOrDefault().Value;
+            double number = (double)command.Data.Options.Where(x => x.Name == "amount").FirstOrDefault().Value;
+            int amount = (int)number;
+
+            if (amount < 0)
+            {
+                await command.RespondAsync("You can't trade a negative number..", ephemeral: true);
+                return;
+            }
+
+            if (amount > 0)
+            {
+                PlayerModel? whoDbModel = await _dbDataAccess.GetPlayerByDiscordIdAsync(command.User.Id);
+                PlayerModel? tradePartnerDbModel = await _dbDataAccess.GetPlayerByDiscordIdAsync(tradePartner.Id);
+
+                if (whoDbModel is null || tradePartnerDbModel is null)
+                {
+                    await command.RespondAsync("One or both users are not registered.", ephemeral: true);
+                    return;
+                }
+                if (whoDbModel.Balance < amount)
+                {
+                    await command.RespondAsync("You do not have enough points to make that trade.", ephemeral: true);
+                    return;
+                }
+
+                whoDbModel.Balance -= amount;
+                tradePartnerDbModel.Balance += amount;
+
+                await _dbDataAccess.UpdatePlayerAsync(whoDbModel);
+                await _dbDataAccess.UpdatePlayerAsync(tradePartnerDbModel);
+
+                Console.WriteLine($"{command.User.Mention} traded {amount} points to {tradePartner.Username}.");
+                await command.RespondAsync($"{command.User.Mention} traded {amount} points to {tradePartner.Username}.");
+            }
+            else
+            {
+                await command.RespondAsync("You can only trade a positive amount of points.", ephemeral: true);
+                return;
             }
         }
 
@@ -128,39 +234,44 @@ namespace DediBotWeb.Services
 
         private async Task HandleRegister(SocketSlashCommand command)
         {
-            if (await _dbDataAccess.InsertNewPlayer(new PlayerModel() { DiscordId = command.User.Id, Balance = 25000, Username = command.User.Username }) == 0)
-                await command.RespondAsync("You are already registered.", ephemeral: true);
-            else
-                await command.RespondAsync("You have registered.", ephemeral: true);
+            await _dbDataAccess.AddPlayerAsync(new PlayerModel() { DiscordId = command.User.Id, Balance = 25000, Username = command.User.Username });
+
+            //if (await _dbDataAccess.AddPlayerAsync(new PlayerModel() { DiscordId = command.User.Id, Balance = 25000, Username = command.User.Username }) == 0)
+            //    await command.RespondAsync("You are already registered.", ephemeral: true);
+            //else
+            await command.RespondAsync("You have registered.", ephemeral: true);
         }
 
         private async Task HandleDailyCommand(SocketSlashCommand command)
         {
-            var whoDbModel = await _dbDataAccess.GetPlayerByDiscordId(command.User.Id);
+            PlayerModel? whoDbModel = await _dbDataAccess.GetPlayerByDiscordIdAsync(command.User.Id);
             if (whoDbModel is null)
             {
                 await command.RespondAsync("You are not registered please use the /dediregister command.");
                 return;
             }
 
-            if (whoDbModel.DailyClaimedAt.Date == DateTime.UtcNow.Date)
+            if (whoDbModel.DailyClaimedAt.Date == DateTime.Today)
             {
                 await command.RespondAsync("You have already claimed your daily points today, come back tomorrow!", ephemeral: true);
                 return;
             }
             else
             {
-                whoDbModel.Balance += 10000;
-                whoDbModel.DailyClaimedAt = DateTime.UtcNow;
-                await _dbDataAccess.UpdatePlayer(whoDbModel);
+                int awardAmount = DailyRewardAmount;
+                if ((DateTime.Now.DayOfWeek == DayOfWeek.Saturday) || (DateTime.Now.DayOfWeek == DayOfWeek.Sunday)) awardAmount *= WeekendDailyRewardMultiplier;
+
+                whoDbModel.Balance += awardAmount;
+                whoDbModel.DailyClaimedAt = DateTime.Today;
+                await _dbDataAccess.UpdatePlayerAsync(whoDbModel);
+                Console.WriteLine($"{command.User.Username} claimed their daily points.");
                 await command.RespondAsync($"You have claimed your daily points, your balance is now {whoDbModel.Balance}", ephemeral: true);
             }
         }
         private async Task HandleWhoCommand(SocketSlashCommand command)
         {
             SocketUser who = (SocketUser)command.Data.Options.Where(x => x.Name == "who").FirstOrDefault().Value;
-
-            var whoDbModel = await _dbDataAccess.GetPlayerByDiscordId(who.Id);
+            PlayerModel? whoDbModel = await _dbDataAccess.GetPlayerByDiscordIdAsync(who.Id);
 
             if (whoDbModel is null)
             {
@@ -170,7 +281,7 @@ namespace DediBotWeb.Services
 
             var builder = new ComponentBuilderV2();
             builder
-                .WithTextDisplay($"Stats for <@{who.Username}>")
+                .WithTextDisplay($"Stats for {who.Username}")
                 .WithTextDisplay($"Wins: {whoDbModel.Wins}")
                 .WithTextDisplay($"Losses: {whoDbModel.Losses}")
                 .WithTextDisplay($"Total Games Played: {whoDbModel.TotalGamesPlayed}")
@@ -187,8 +298,11 @@ namespace DediBotWeb.Services
 
         private async Task HandleDeathDiceCommand(SocketSlashCommand command)
         {
-            SocketUser? initialUser = command.User;
-            SocketUser? challenegedUser = (SocketUser)command.Data.Options.Where(x => x.Name == "opponent").FirstOrDefault().Value;
+            SocketUser? initialUser;
+            SocketUser? challenegedUser;
+
+            initialUser = command.User;
+            challenegedUser = (SocketUser)command.Data.Options.Where(x => x.Name == "opponent").FirstOrDefault().Value;
 
             if (initialUser is null || challenegedUser is null)
             {
@@ -203,18 +317,23 @@ namespace DediBotWeb.Services
             }
 
             double number = (double)command.Data.Options.Where(x => x.Name == "wager").FirstOrDefault().Value;
-            int numb = (int)number;
+            int wager = (int)number;
 
-            if (numb == 0 || numb == 1)
+            if (wager < 0)
+            {
+                await command.RespondAsync("You can't wager a negative number..", ephemeral: true);
+                return;
+            }
+
+            if (wager == 0 || wager == 1)
             {
                 await command.RespondAsync("You can't wager between 1 and 2..", ephemeral: true);
                 return;
             }
 
-            var instanceInfo = AddInstanceInfo(numb, initialUser, challenegedUser);
-
-            var dbInitialUser = await _dbDataAccess.GetPlayerByDiscordId(initialUser.Id);
-            var dbChallengedUser = await _dbDataAccess.GetPlayerByDiscordId(challenegedUser.Id);
+            GameInstanceInfo instanceInfo = AddInstanceInfo(wager, initialUser, challenegedUser);
+            PlayerModel? dbInitialUser = await _dbDataAccess.GetPlayerByDiscordIdAsync(initialUser.Id);
+            PlayerModel? dbChallengedUser = await _dbDataAccess.GetPlayerByDiscordIdAsync(challenegedUser.Id);
 
             if (dbInitialUser is null || dbChallengedUser is null)
             {
@@ -222,7 +341,7 @@ namespace DediBotWeb.Services
                 return;
             }
 
-            if (!(dbInitialUser.Balance >= numb) || !(dbChallengedUser.Balance >= numb))
+            if (!(dbInitialUser.Balance >= wager) || !(dbChallengedUser.Balance >= wager))
             {
                 await command.RespondAsync("One of the players does not have enough points to make that wager.", ephemeral: true);
                 return;
@@ -233,6 +352,7 @@ namespace DediBotWeb.Services
             var declineChallengeButton = new ButtonBuilder("Decline", customId: instanceInfo.DeclineButtonID);
 
             builder
+            .WithTextDisplay($"Game ID: {instanceInfo.ID}")
             .WithTextDisplay($"{initialUser.Mention} has challenged {challenegedUser.Mention} to a death dice!")
             .WithTextDisplay($"Starting Number: {instanceInfo.InitialNumber}")
             .WithActionRow([
@@ -250,7 +370,7 @@ namespace DediBotWeb.Services
             {
                 case SocketMessageComponent component:
 
-                    var customId = component.Data.CustomId;
+                    string customId = component.Data.CustomId;
                     Console.WriteLine($"{arg.User.Id} clicked button..");
                     Console.WriteLine($"Custom ID: {customId}");
                     GameInstanceInfo instanceInfo = null;
@@ -266,6 +386,15 @@ namespace DediBotWeb.Services
                             await component.RespondAsync("You are not playing.", ephemeral: true);
                             return;
                         }
+
+                        PlayerModel challengerModel = _dbDataAccess.GetPlayerByDiscordIdAsync(instanceInfo.InitialChallenger.Id).Result;
+                        PlayerModel challengedUserModel = _dbDataAccess.GetPlayerByDiscordIdAsync(instanceInfo.ChallengedUser.Id).Result;
+
+                        List<PlayerModel> players = new List<PlayerModel>() { challengerModel, challengedUserModel };
+
+                        instanceInfo.SetState(GameInstanceInfo.GameState.InProgress);
+
+                        GatherPot(players, instanceInfo.InitialNumber, instanceInfo);
 
                         instanceInfo.AddRollHistory(instanceInfo.InitialNumber, component.User.Id);
                     }
@@ -296,11 +425,10 @@ namespace DediBotWeb.Services
                     {
                         instanceInfo = InstanceInfos.Where(i => $"roll-{i.ID.ToString()}" == customId).FirstOrDefault();
 
-                        var rollAttemptUser = arg.User.Id;
-                        var whoRolledLast = instanceInfo.RollHistory.Last().WhoRolled;
-
-                        var initialChallenger = instanceInfo.InitialChallenger.Id;
-                        var challengedUser = instanceInfo.ChallengedUser.Id;
+                        ulong rollAttemptUser = arg.User.Id;
+                        ulong whoRolledLast = instanceInfo.RollHistory.Last().WhoRolled;
+                        ulong initialChallenger = instanceInfo.InitialChallenger.Id;
+                        ulong challengedUser = instanceInfo.ChallengedUser.Id;
 
                         if (rollAttemptUser != initialChallenger && rollAttemptUser != challengedUser)
                         {
@@ -321,37 +449,34 @@ namespace DediBotWeb.Services
                     }
 
                     // Update the component..
-                    newComponentContainer = BuildComponentUnsafe(instanceInfo, arg);
                     await component.UpdateAsync(x =>
                     {
-                        x.Components = newComponentContainer.Build();
+                        x.Components = BuildComponentUnsafe(instanceInfo).Build();
                     });
                     break;
                 case SocketModal modal:
                     // Interaction came from a modal
-
                     break;
                 default:
                     return;
             }
         }
 
-        public ComponentBuilderV2 BuildComponentUnsafe(GameInstanceInfo gameInstanceInfo, SocketInteraction arg)
+        public ComponentBuilderV2 BuildComponentUnsafe(GameInstanceInfo gameInstanceInfo)
         {
             var builder = new ComponentBuilderV2();
             builder.WithTextDisplay($"Starting Number: {gameInstanceInfo.InitialNumber}");
 
             SocketUser rolledUser = gameInstanceInfo.InitialChallenger;
             SocketUser whoRollsNext = gameInstanceInfo.WhoRollsNext;
-            if (whoRollsNext == gameInstanceInfo.InitialChallenger)
-            {
-                rolledUser = gameInstanceInfo.ChallengedUser;
-            }
+            if (whoRollsNext == gameInstanceInfo.InitialChallenger) rolledUser = gameInstanceInfo.ChallengedUser;
 
-            var doesContainLoseCondition = gameInstanceInfo.RollHistory.Where(x => x.RolledNumber == 1);
-            if (doesContainLoseCondition.Count() == 1) // Lose condition..
+            PlayerModel winnerDbInfo = null;
+            PlayerModel loserDbInfo = null;
+
+            if (gameInstanceInfo.RollHistory.Where(x => x.RolledNumber == 1).Count() == 1) // Lose condition..
             {
-                foreach (var roll in gameInstanceInfo.RollHistory)
+                foreach (Roll roll in gameInstanceInfo.RollHistory)
                 {
                     var mention = string.Empty;
                     if (roll.WhoRolled == gameInstanceInfo.InitialChallenger.Id)
@@ -363,19 +488,21 @@ namespace DediBotWeb.Services
 
                     if (roll.RolledNumber == 1)
                     {
+                        gameInstanceInfo.SetState(GameInstanceInfo.GameState.Completed);
+
                         builder.WithTextDisplay($"{mention} rolled a 1.");
 
-                        var loser = roll.WhoRolled;
-                        var winner = gameInstanceInfo.InitialChallenger.Id == loser ? gameInstanceInfo.ChallengedUser.Id : gameInstanceInfo.InitialChallenger.Id;
+                        ulong loser = roll.WhoRolled;
+                        ulong winner = gameInstanceInfo.InitialChallenger.Id == loser ? gameInstanceInfo.ChallengedUser.Id : gameInstanceInfo.InitialChallenger.Id;
 
-                        var winnerDbInfo = _dbDataAccess.GetPlayerByDiscordId(winner).Result;
-                        var loserDbInfo = _dbDataAccess.GetPlayerByDiscordId(loser).Result;
+                        winnerDbInfo = _dbDataAccess.GetPlayerByDiscordIdAsync(winner).Result;
+                        loserDbInfo = _dbDataAccess.GetPlayerByDiscordIdAsync(loser).Result;
 
-                        winnerDbInfo = UpdatePlayerStats(winnerDbInfo, gameInstanceInfo.InitialNumber, didWin: true);
-                        loserDbInfo = UpdatePlayerStats(loserDbInfo, gameInstanceInfo.InitialNumber, didWin: false);
+                        winnerDbInfo = UpdatePlayerStats(winnerDbInfo, gameInstanceInfo, didWin: true);
+                        loserDbInfo = UpdatePlayerStats(loserDbInfo, gameInstanceInfo, didWin: false);
 
-                        _dbDataAccess.UpdatePlayer(winnerDbInfo);
-                        _dbDataAccess.UpdatePlayer(loserDbInfo);
+                        _dbDataAccess.UpdatePlayerAsync(winnerDbInfo);
+                        _dbDataAccess.UpdatePlayerAsync(loserDbInfo);
                     }
                     else
                     {
@@ -384,17 +511,19 @@ namespace DediBotWeb.Services
                 }
 
                 builder
-                .WithTextDisplay($"{rolledUser.Mention} lost.");
+                .WithTextDisplay($"{rolledUser.Mention} lost.")
+                .WithTextDisplay($"{rolledUser.Mention} now has {loserDbInfo.Balance} points.")
+                .WithTextDisplay($"{whoRollsNext.Mention} now has {winnerDbInfo.Balance} points.");
+
                 InstanceInfos.Remove(gameInstanceInfo);
             }
-            else
+            else // Lose condition not met.. continue the game..
             {
-                var RollButton = new ButtonBuilder("Roll", customId: $"roll-{gameInstanceInfo.ID}");
                 builder
                 .WithTextDisplay($"{rolledUser.Mention} rolled a {gameInstanceInfo.RollHistory.LastOrDefault().RolledNumber}")
-                .WithTextDisplay($"{whoRollsNext.Mention} turn.")
+                .WithTextDisplay($"{whoRollsNext.Mention}'s turn.")
                 .WithActionRow([
-                    RollButton
+                    new ButtonBuilder("Roll", customId: $"roll-{gameInstanceInfo.ID}")
                 ]);
             }
             return builder;
@@ -403,34 +532,40 @@ namespace DediBotWeb.Services
 
         #region HelperMethods
 
-        private PlayerModel UpdatePlayerStats(PlayerModel player, int initialWager, bool didWin)
+        private void GatherPot(List<PlayerModel> players, int wager, GameInstanceInfo gameInfo)
+        {
+            foreach (PlayerModel player in players)
+            {
+                player.Balance -= wager;
+                gameInfo.AddPotentialWinnings(wager);
+                _dbDataAccess.UpdatePlayerAsync(player);
+            }
+        }
+
+        private PlayerModel UpdatePlayerStats(PlayerModel player, GameInstanceInfo gameInfo, bool didWin)
         {
             if (didWin)
             {
-                player.Wins += 1;
-                player.TotalGamesPlayed += 1;
-                player.Balance += initialWager;
+                player.Wins++;
+                player.Balance += gameInfo.PotentialWinnings;
             }
             else
             {
-                player.Losses += 1;
-                player.TotalGamesPlayed += 1;
-                player.Balance -= initialWager;
+                player.Losses++;
             }
             return player;
         }
 
         public GameInstanceInfo AddInstanceInfo(int startingNumber, SocketUser initialChallenger, SocketUser challengedUser)
         {
-            InstanceInfos.Add(new GameInstanceInfo(startingNumber, initialChallenger, challengedUser));
-            return InstanceInfos.Where(i => i.InitialChallenger == initialChallenger && i.ChallengedUser == challengedUser).FirstOrDefault();
+            var newInstanceInfo = new GameInstanceInfo(startingNumber, initialChallenger, challengedUser);
+            InstanceInfos.Add(newInstanceInfo);
+            return newInstanceInfo;
         }
 
-        public async Task SetBotStatus(UserStatus status)
+        public async Task SetStatus(UserStatus status)
         {
-            Console.WriteLine($"Set status to: {status}.");
             await _client.SetStatusAsync(status);
-
             Console.WriteLine($"Status: {_client.Status}");
 
         }

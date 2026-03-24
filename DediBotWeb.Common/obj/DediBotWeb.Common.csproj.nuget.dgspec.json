@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Dennis\\source\\repos\\DediWeb\\DediBotWeb.Common\\DediBotWeb.Common.csproj": {}
+    "C:\\Users\\Dennis\\source\\repos\\DediWeb - Copy\\DediBotWeb.Common\\DediBotWeb.Common.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Dennis\\source\\repos\\DediWeb\\DediBotWeb.Common\\DediBotWeb.Common.csproj": {
+    "C:\\Users\\Dennis\\source\\repos\\DediWeb - Copy\\DediBotWeb.Common\\DediBotWeb.Common.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Dennis\\source\\repos\\DediWeb\\DediBotWeb.Common\\DediBotWeb.Common.csproj",
+        "projectUniqueName": "C:\\Users\\Dennis\\source\\repos\\DediWeb - Copy\\DediBotWeb.Common\\DediBotWeb.Common.csproj",
         "projectName": "DediBotWeb.Common",
-        "projectPath": "C:\\Users\\Dennis\\source\\repos\\DediWeb\\DediBotWeb.Common\\DediBotWeb.Common.csproj",
+        "projectPath": "C:\\Users\\Dennis\\source\\repos\\DediWeb - Copy\\DediBotWeb.Common\\DediBotWeb.Common.csproj",
         "packagesPath": "C:\\Users\\Dennis\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Dennis\\source\\repos\\DediWeb\\DediBotWeb.Common\\obj\\",
+        "outputPath": "C:\\Users\\Dennis\\source\\repos\\DediWeb - Copy\\DediBotWeb.Common\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -53,6 +53,10 @@
             "Discord.Net": {
               "target": "Package",
               "version": "[3.18.0, )"
+            },
+            "Microsoft.Azure.Cosmos": {
+              "target": "Package",
+              "version": "[3.58.0, )"
             }
           },
           "imports": [
