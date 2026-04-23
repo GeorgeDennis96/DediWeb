@@ -12,6 +12,7 @@ Loser is whoever hits the number 1.
 - `/dedidaily`
 - `/dediwho [user]`
 - `/dedirules`
+- `/deditrade`
 
 ## FEATURES
 - Simple and fun gameplay.
