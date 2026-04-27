@@ -13,7 +13,7 @@ Loser is whoever hits the number 1.
 - `/dediwho [user]`
 - `/dedirules`
 - `/deditrade`
-- `/dedibet [amount] [game id] [user (The person you want to win)] (In Progress)
+- `/dedibet [amount] [game id] [user (The person you want to win)]` (In Progress)
 
 ## FEATURES
 - Simple and fun gameplay.
