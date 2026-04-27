@@ -6,16 +6,16 @@ namespace DediBotWeb.Services
 
     public class RankingService : IRankingService
     {
-        private readonly IPlayerData PlayerData;
-        public List<PlayerModel> Top1000Players { get; private set; } = new List<PlayerModel>();
+        private readonly IPlayerRepo PlayerData;
+        public List<PlayerModel> TopPlayers { get; private set; } = new List<PlayerModel>();
 
-        public RankingService(IPlayerData playerData)
+        public RankingService(IPlayerRepo playerData)
         {
             this.PlayerData = playerData;
         }
         public async Task<List<PlayerModel>> LoadTopPlayers(int amount)
         {
-            return await PlayerData.GetTopPlayers(amount);
+            return await PlayerData.GetTopPlayersAsync(amount);
         }
     }
 }

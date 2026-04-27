@@ -53,6 +53,10 @@
             "Discord.Net": {
               "target": "Package",
               "version": "[3.18.0, )"
+            },
+            "Microsoft.Azure.Cosmos": {
+              "target": "Package",
+              "version": "[3.58.0, )"
             }
           },
           "imports": [

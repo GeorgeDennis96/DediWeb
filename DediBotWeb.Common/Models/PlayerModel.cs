@@ -5,12 +5,17 @@
         public Guid InternalId { get; set; } = Guid.NewGuid();
         public decimal DiscordId { get; set; }
         public string Username { get; set; } = string.Empty;
-        public int TotalGamesPlayed { get; set; }
+        public int TotalGamesPlayed => GetTotalGamesPlayed();
         public int Wins { get; set; }
         public int Losses { get; set; }
         public decimal WinRate => GetWinRate();
         public int Balance { get; set; }
         public DateTime DailyClaimedAt { get; set; }
+
+        private int GetTotalGamesPlayed()
+        {
+            return Wins + Losses;
+        }
 
         private decimal GetWinRate()
         {

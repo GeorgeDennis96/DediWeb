@@ -1,10 +1,4 @@
 /* /Components/Layout/MainLayout.razor.rz.scp.css */
-.page[b-oehpbc3t2d] {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-}
-
 main[b-oehpbc3t2d] {
     flex: 1;
 }

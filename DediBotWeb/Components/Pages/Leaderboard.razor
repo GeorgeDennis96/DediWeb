@@ -2,31 +2,54 @@
 @using DbAccessLibrary
 @using DediBotWeb.Common.Models;
 @using DediBotWeb.Services
-@using MudBlazor
 @inject IRankingService rankingService
 @inject NavigationManager navManager
 
-<h3>Leaderboard</h3>
-
-@if (Players is not null || TopPlayer is not null)
-{
-    <MudGrid Justify="Justify.Center">
-        <MudItem xs="1">
-            <MudCard>
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.body1">@TopPlayer.Username</MudText>
-                    </CardHeaderContent>
-                </MudCardHeader>
-                <MudCardActions>
-                    <MudIconButton Icon="@Icons.Material.Filled.Pageview" OnClick="(() => ViewPlayer(TopPlayer.InternalId))" Color="Color.Default" />
-                </MudCardActions>
-            </MudCard>
-        </MudItem>
-    </MudGrid>
-}
-
-
+    @if (Players is not null || TopPlayer is not null)
+    {
+        <MudGrid Justify="Justify.Center">
+            <MudItem xs="2">
+                <MudCard>
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Align="Align.Center" Typo="Typo.body1">
+                                <MudChip Text="@TopPlayer.Username" Class="justify-content-center" T="string" Icon="@Icons.Custom.Uncategorized.ChessKing" Variant="Variant.Outlined" Color="Color.Warning" />
+                            </MudText>
+                            <MudText Align="Align.Center" Typo="Typo.body1">Balance: @TopPlayer.Balance</MudText>
+                            <MudText Align="Align.Center" Typo="Typo.body1">Win rate: @TopPlayer.WinRate</MudText>
+                            <MudText Align="Align.Center" Typo="Typo.body1">Rank: 1</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardActions Class="justify-content-center">
+                        <MudIconButton Icon="@Icons.Material.Filled.Pageview" OnClick="(() => ViewPlayer(TopPlayer.InternalId))" Color="Color.Default" />
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
+        <MudDivider DividerType="DividerType.Middle" Class="my-6" />
+        <MudGrid Spacing="6" Justify="Justify.Center">
+            @for (int i = 0; i < Players.Count; i++)
+            {
+                int localindex = i;
+                int rank = i + 2; // Since the top player is already displayed, we start from rank 2
+                <MudItem xs="2">
+                    <MudCard>
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Align="Align.Center" Typo="Typo.body1">@Players[localindex].Username</MudText>
+                                <MudText Align="Align.Center" Typo="Typo.body1">Balance: @Players[localindex].Balance</MudText>
+                                <MudText Align="Align.Center" Typo="Typo.body1">Win rate: @Players[localindex].WinRate</MudText>
+                                <MudText Align="Align.Center" Typo="Typo.body1">Rank: @rank</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardActions Class="justify-content-center">
+                            <MudIconButton Icon="@Icons.Material.Filled.Pageview" OnClick="(() => ViewPlayer(Players[localindex].InternalId))" Color="Color.Default" />
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    }
 
 @code {
 
@@ -40,11 +63,16 @@
     {
         if (amount > 1000) amount = 1000; // Set a limit
         Players = await rankingService.LoadTopPlayers(amount);
-        if (Players.Count > 0) TopPlayer = Players[0];
+        if (Players.Count > 0) TopPlayer = Players[0]; Players.Remove(TopPlayer);
     }
 
     public void ViewPlayer(Guid id)
     {
         navManager.NavigateTo($"/player/{id}");
+    }
+
+    public string GetRankFromPlayerIndex(int index)
+    {
+        return (index + 1).ToString();
     }
 }

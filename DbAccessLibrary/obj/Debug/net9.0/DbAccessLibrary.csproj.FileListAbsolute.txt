@@ -29,3 +29,8 @@ C:\Users\Dennis\source\repos\DediWeb\DbAccessLibrary\obj\Debug\net9.0\DbAccessLi
 C:\Users\Dennis\source\repos\DediWeb\DbAccessLibrary\obj\Debug\net9.0\refint\DbAccessLibrary.dll
 C:\Users\Dennis\source\repos\DediWeb\DbAccessLibrary\obj\Debug\net9.0\DbAccessLibrary.pdb
 C:\Users\Dennis\source\repos\DediWeb\DbAccessLibrary\obj\Debug\net9.0\ref\DbAccessLibrary.dll
+C:\Users\Dennis\source\repos\DediWeb\DbAccessLibrary\bin\Debug\net9.0\Microsoft.Azure.Cosmos.ServiceInterop.dll
+C:\Users\Dennis\source\repos\DediWeb\DbAccessLibrary\bin\Debug\net9.0\Cosmos.CRTCompat.dll
+C:\Users\Dennis\source\repos\DediWeb\DbAccessLibrary\bin\Debug\net9.0\msvcp140.dll
+C:\Users\Dennis\source\repos\DediWeb\DbAccessLibrary\bin\Debug\net9.0\vcruntime140.dll
+C:\Users\Dennis\source\repos\DediWeb\DbAccessLibrary\bin\Debug\net9.0\vcruntime140_1.dll

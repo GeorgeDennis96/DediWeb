@@ -10,8 +10,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddTransient<IDbDataAccess, DbDataAccess>();
-builder.Services.AddTransient<IPlayerData, PlayerData>();
+builder.Services.AddSingleton<IPlayerRepo, SqlPlayerRepository>();
+//builder.Services.AddSingleton<IPlayerRepo, CosmosPlayerRepository>();
+//if (builder.Environment.IsDevelopment())
+//{
+//    builder.Services.AddSingleton<IPlayerRepo, SqlPlayerRepository>();
+//}
+//else
+//{
+//    builder.Services.AddSingleton<IPlayerRepo, CosmosPlayerRepository>();
+//}
 
 builder.Services.AddSingleton<IRankingService, RankingService>();
 builder.Services.AddSingleton<DiscordSocketClient>();
@@ -21,11 +29,8 @@ builder.Services.AddMudServices();
 
 var app = builder.Build();
 
-DiscordService discordService = (DiscordService)app.Services.GetService(typeof(DiscordService));
+var discordService = app.Services.GetRequiredService<DiscordService>();
 await discordService.Start();
-
-
-await discordService.BuildSlashCommands();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

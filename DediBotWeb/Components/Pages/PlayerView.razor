@@ -1,13 +1,12 @@
 ﻿@page "/player/{playerid}"
 @using DbAccessLibrary
 @using DediBotWeb.Common.Models;
-@using MudBlazor
 @inject NavigationManager NavigationManager
-@inject IPlayerData PlayerData
+@inject IPlayerRepo PlayerData
 
 <MudButton OnClick="NavToLeaderboard">Go Back</MudButton>
 
-<h3>@Player?.Username</h3>
+<MudText Typo="@Typo.h3">@Player?.Username</MudText>
 
 @if (Player is not null)
 {
@@ -40,7 +39,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Player = await PlayerData.GetPlayerByInternalId(Guid.Parse(playerid));
+        Player = await PlayerData.GetPlayerByInternalIdAsync(Guid.Parse(playerid));
         if (Player is not null) data = GetDataFromPlayer(Player);
     }
 
