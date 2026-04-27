@@ -21,3 +21,7 @@
 /DediBotWeb/obj/Debug/net9.0/rjsmrazor.dswa.cache.json
 /DediBotWeb/obj/Debug/net9.0/rpswa.dswa.cache.json
 *.vsidx
+/DediBotWeb.Common/obj/Debug/net9.0/ref/DediBotWeb.Common.dll
+/DediBotWeb.Common/obj/Debug/net9.0/DediBotWeb.Common.dll
+/DbAccessLibrary/obj/Debug/net9.0/ref/DbAccessLibrary.dll
+/DbAccessLibrary/obj/Debug/net9.0/refint/DbAccessLibrary.dll
