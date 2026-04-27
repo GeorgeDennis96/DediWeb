@@ -1,6 +1,10 @@
 ﻿/DbAccessLibrary/bin
 /DediBotWeb/bin
 /DediBotWeb.Common/bin
+/DedibotWeb.Common/obj
+/DediBotWeb/DbAccessLibrary/bin
+/DediBotWeb/DbAccessLibrary/obj
+/DediBotWeb/.vs
 /DediBotWeb/.vs/DediBotWeb/CopilotIndices/17.14.1584.41681
 /DediBotWeb/.vs/DediBotWeb/v17/.suo
 /DediBotWeb/.vs/DediBotWeb/v17/DocumentLayout.backup.json
