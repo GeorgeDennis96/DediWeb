@@ -1,4 +1,5 @@
-﻿using Discord.WebSocket;
+﻿using DediBotWeb.Common._Constants;
+using Discord.WebSocket;
 
 namespace DediBotWeb.Common.Models
 {
@@ -61,13 +62,6 @@ namespace DediBotWeb.Common.Models
         public void AddPotentialWinnings(int amount)
         {
             PotentialWinnings += amount;
-        }
-
-        public enum GameState
-        {
-            Pending,
-            InProgress,
-            Completed
         }
     }
 }

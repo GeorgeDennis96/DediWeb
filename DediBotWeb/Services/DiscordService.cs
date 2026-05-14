@@ -1,10 +1,9 @@
 ﻿using DbAccessLibrary;
+using DediBotWeb.Common._Constants;
 using DediBotWeb.Common.Models;
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
-using System.Net;
-using System.Reflection;
 
 namespace DediBotWeb.Services
 {
@@ -13,7 +12,7 @@ namespace DediBotWeb.Services
         private readonly DiscordSocketClient _client;
         private readonly IPlayerRepo _dbDataAccess;
         private List<SlashCommand> SlashCommands = new List<SlashCommand>();
-        private static List<GameInstanceInfo> InstanceInfos = new List<GameInstanceInfo>();
+        private static List<GameInstanceInfo> GameInstanceInfos = new List<GameInstanceInfo>();
         private const int DailyRewardAmount = 10000;
         private const int WeekendDailyRewardMultiplier = 2;
 
@@ -28,7 +27,7 @@ namespace DediBotWeb.Services
         {
             _client.Log += Log_Async;
 
-            await _client.LoginAsync(TokenType.Bot, "your_bot_token_here");
+            await _client.LoginAsync(TokenType.Bot, "ur_bot_token_here");
             await _client.StartAsync();
 
             _client.SlashCommandExecuted += SlashCommandHandler;
@@ -68,7 +67,7 @@ namespace DediBotWeb.Services
 
             foreach (SlashCommand slashCommand in SlashCommands)
             {
-                var slashCommandInitiate = new Discord.SlashCommandBuilder()
+                var slashCommandInitiate = new SlashCommandBuilder()
                 .WithName(slashCommand.Name)
                 .WithDescription(slashCommand.Description);
 
@@ -161,7 +160,7 @@ namespace DediBotWeb.Services
         private async Task HandleBettingCommand(SocketSlashCommand command)
         {
             string gameId = (string)command.Data.Options.Where(x => x.Name == "id").FirstOrDefault().Value;
-            GameInstanceInfo gameInfo = InstanceInfos.Where(i => i.ID.ToString() == gameId).FirstOrDefault();
+            GameInstanceInfo gameInfo = GameInstanceInfos.Where(i => i.ID.ToString() == gameId).FirstOrDefault();
 
             double amount = (double)command.Data.Options.Where(x => x.Name == "amount").FirstOrDefault().Value;
             int bet = (int)amount;
@@ -279,16 +278,17 @@ namespace DediBotWeb.Services
                 return;
             }
 
-            var builder = new ComponentBuilderV2();
-            builder
-                .WithTextDisplay($"Stats for {who.Username}")
-                .WithTextDisplay($"Wins: {whoDbModel.Wins}")
-                .WithTextDisplay($"Losses: {whoDbModel.Losses}")
-                .WithTextDisplay($"Total Games Played: {whoDbModel.TotalGamesPlayed}")
-                .WithTextDisplay($"Win Rate: {whoDbModel.WinRate}%")
-                .WithTextDisplay($"Balance: {whoDbModel.Balance}");
+            var embed = new EmbedBuilder()
+                .WithTitle($"Stats for {who.Username}")
+                .AddField("Wins", whoDbModel.Wins, true)
+                .AddField("Losses", whoDbModel.Losses, true)
+                .AddField("Total Games Played", whoDbModel.TotalGamesPlayed, true)
+                .AddField("Win Rate", $"{whoDbModel.WinRate}%", true)
+                .AddField("Balance", whoDbModel.Balance, true)
+                .WithThumbnailUrl(who.GetAvatarUrl() ?? who.GetDefaultAvatarUrl())
+                .WithColor(Color.Default);
 
-            await command.RespondAsync(components: builder.Build());
+            await command.RespondAsync(embed: embed.Build());
         }
 
         private async Task HandleUnkownCommand(SocketSlashCommand command)
@@ -331,7 +331,7 @@ namespace DediBotWeb.Services
                 return;
             }
 
-            GameInstanceInfo instanceInfo = AddInstanceInfo(wager, initialUser, challenegedUser);
+            GameInstanceInfo gameInfo = AddInstanceInfo(wager, initialUser, challenegedUser);
             PlayerModel? dbInitialUser = await _dbDataAccess.GetPlayerByDiscordIdAsync(initialUser.Id);
             PlayerModel? dbChallengedUser = await _dbDataAccess.GetPlayerByDiscordIdAsync(challenegedUser.Id);
 
@@ -348,13 +348,13 @@ namespace DediBotWeb.Services
             }
 
             var builder = new ComponentBuilderV2();
-            var AcceptChallengeButton = new ButtonBuilder("Accept", customId: instanceInfo.AcceptButtonID);
-            var declineChallengeButton = new ButtonBuilder("Decline", customId: instanceInfo.DeclineButtonID);
+            var AcceptChallengeButton = new ButtonBuilder("Accept", customId: gameInfo.AcceptButtonID);
+            var declineChallengeButton = new ButtonBuilder("Decline", customId: gameInfo.DeclineButtonID);
 
             builder
-            .WithTextDisplay($"Game ID: {instanceInfo.ID}")
+            .WithTextDisplay($"Game ID: {gameInfo.ID}")
             .WithTextDisplay($"{initialUser.Mention} has challenged {challenegedUser.Mention} to a death dice!")
-            .WithTextDisplay($"Starting Number: {instanceInfo.InitialNumber}")
+            .WithTextDisplay($"Starting Number: {gameInfo.InitialNumber}")
             .WithActionRow([
                 AcceptChallengeButton, declineChallengeButton
                 ]);
@@ -370,89 +370,7 @@ namespace DediBotWeb.Services
             {
                 case SocketMessageComponent component:
 
-                    string customId = component.Data.CustomId;
-                    Console.WriteLine($"{arg.User.Id} clicked button..");
-                    Console.WriteLine($"Custom ID: {customId}");
-                    GameInstanceInfo instanceInfo = null;
-                    ComponentBuilderV2 newComponentContainer;
-
-                    // Handle the challenge component..
-                    if (customId.StartsWith("accept-"))
-                    {
-                        instanceInfo = InstanceInfos.Where(i => i.AcceptButtonID == customId).FirstOrDefault();
-
-                        if (component.User.Id != instanceInfo.ChallengedUser.Id)
-                        {
-                            await component.RespondAsync("You are not playing.", ephemeral: true);
-                            return;
-                        }
-
-                        PlayerModel challengerModel = _dbDataAccess.GetPlayerByDiscordIdAsync(instanceInfo.InitialChallenger.Id).Result;
-                        PlayerModel challengedUserModel = _dbDataAccess.GetPlayerByDiscordIdAsync(instanceInfo.ChallengedUser.Id).Result;
-
-                        List<PlayerModel> players = new List<PlayerModel>() { challengerModel, challengedUserModel };
-
-                        instanceInfo.SetState(GameInstanceInfo.GameState.InProgress);
-
-                        GatherPot(players, instanceInfo.InitialNumber, instanceInfo);
-
-                        instanceInfo.AddRollHistory(instanceInfo.InitialNumber, component.User.Id);
-                    }
-
-                    if (customId.StartsWith("decline-"))
-                    {
-                        instanceInfo = InstanceInfos.Where(i => i.DeclineButtonID == customId).FirstOrDefault();
-
-                        if (component.User.Id != instanceInfo.ChallengedUser.Id)
-                        {
-                            await component.RespondAsync("You are not playing.", ephemeral: true);
-                            return;
-                        }
-
-                        var builder = new ComponentBuilderV2();
-                        builder.WithTextDisplay($"{instanceInfo.ChallengedUser.Mention} declined the duel.");
-                        InstanceInfos.Remove(instanceInfo);
-
-                        await component.UpdateAsync(x =>
-                        {
-                            x.Components = builder.Build();
-                        });
-                        return;
-                    }
-
-                    // Handle the rolling component..
-                    if (customId.StartsWith("roll-"))
-                    {
-                        instanceInfo = InstanceInfos.Where(i => $"roll-{i.ID.ToString()}" == customId).FirstOrDefault();
-
-                        ulong rollAttemptUser = arg.User.Id;
-                        ulong whoRolledLast = instanceInfo.RollHistory.Last().WhoRolled;
-                        ulong initialChallenger = instanceInfo.InitialChallenger.Id;
-                        ulong challengedUser = instanceInfo.ChallengedUser.Id;
-
-                        if (rollAttemptUser != initialChallenger && rollAttemptUser != challengedUser)
-                        {
-                            await component.RespondAsync("You're not that guy pal, you're not that guy.", ephemeral: true);
-                            return;
-                        }
-
-                        if (rollAttemptUser == whoRolledLast)
-                        {
-                            await component.RespondAsync("It is not your turn.", ephemeral: true);
-                            return;
-                        }
-
-                        if (rollAttemptUser != whoRolledLast)
-                        {
-                            instanceInfo.AddRollHistory(instanceInfo.RollHistory.Last().RolledNumber, component.User.Id);
-                        }
-                    }
-
-                    // Update the component..
-                    await component.UpdateAsync(x =>
-                    {
-                        x.Components = BuildComponentUnsafe(instanceInfo).Build();
-                    });
+                    await HandleMessageComponent(component);
                     break;
                 case SocketModal modal:
                     // Interaction came from a modal
@@ -462,44 +380,148 @@ namespace DediBotWeb.Services
             }
         }
 
-        public ComponentBuilderV2 BuildComponentUnsafe(GameInstanceInfo gameInstanceInfo)
+        private async Task HandleMessageComponent(SocketMessageComponent component)
+        {
+            string customId = component.Data.CustomId;
+            Console.WriteLine($"{component.User.Id} clicked button..");
+            Console.WriteLine($"Custom ID: {customId}");
+
+            switch (GetAction(customId))
+            {
+                case "accept":
+                    await HandleAccept(component, customId);
+                    break;
+
+                case "decline":
+                    await HandleDecline(component, customId);
+                    break;
+
+                case "roll":
+                    await HandleRoll(component, customId);
+                    break;
+
+                default:
+                    await component.RespondAsync("Unknown interaction.", ephemeral: true);
+                    break;
+            }
+        }
+
+        private async Task HandleRoll(SocketMessageComponent component, string customId)
+        {
+            GameInstanceInfo? gameInfo = GameInstanceInfos.Where(i => $"roll-{i.ID.ToString()}" == customId).FirstOrDefault();
+            ulong rollAttemptUser = component.User.Id;
+            ulong whoRolledLast = gameInfo.RollHistory.Last().WhoRolled;
+            ulong initialChallenger = gameInfo.InitialChallenger.Id;
+            ulong challengedUser = gameInfo.ChallengedUser.Id;
+
+            if (rollAttemptUser != initialChallenger && rollAttemptUser != challengedUser)
+            {
+                await component.RespondAsync("You're not that guy pal, you're not that guy.", ephemeral: true);
+                return;
+            }
+
+            if (rollAttemptUser == whoRolledLast)
+            {
+                await component.RespondAsync("It is not your turn.", ephemeral: true);
+                return;
+            }
+
+            if (rollAttemptUser != whoRolledLast)
+            {
+                gameInfo.AddRollHistory(gameInfo.RollHistory.Last().RolledNumber, component.User.Id);
+            }
+
+            // Update the component..
+            await component.UpdateAsync(x =>
+            {
+                x.Components = BuildComponentUnsafe(gameInfo).Build();
+            });
+        }
+
+        private async Task HandleDecline(SocketMessageComponent component, string customId)
+        {
+            var gameInfo = GameInstanceInfos.Where(i => i.DeclineButtonID == customId).FirstOrDefault();
+
+            if (component.User.Id != gameInfo.ChallengedUser.Id)
+            {
+                await component.RespondAsync("You are not playing.", ephemeral: true);
+                return;
+            }
+
+            var builder = new ComponentBuilderV2();
+            builder.WithTextDisplay($"{gameInfo.ChallengedUser.Mention} declined the duel.");
+            GameInstanceInfos.Remove(gameInfo);
+
+            // Update the component..
+            await component.UpdateAsync(x =>
+            {
+                x.Components = builder.Build();
+            });
+        }
+
+        private async Task HandleAccept(SocketMessageComponent component, string customId)
+        {
+            var gameInfo = GameInstanceInfos.Where(i => i.AcceptButtonID == customId).FirstOrDefault();
+            if (component.User.Id != gameInfo.ChallengedUser.Id)
+            {
+                await component.RespondAsync("You are not playing.", ephemeral: true);
+                return;
+            }
+
+            PlayerModel challengerModel = _dbDataAccess.GetPlayerByDiscordIdAsync(gameInfo.InitialChallenger.Id).Result;
+            PlayerModel challengedUserModel = _dbDataAccess.GetPlayerByDiscordIdAsync(gameInfo.ChallengedUser.Id).Result;
+            List<PlayerModel> players = new List<PlayerModel>() { challengerModel, challengedUserModel };
+
+            gameInfo.SetState(GameState.InProgress);
+            CollectWagerFromPlayers(players, gameInfo);
+
+            gameInfo.AddRollHistory(gameInfo.InitialNumber, component.User.Id);
+
+            // Update the component..
+            await component.UpdateAsync(x =>
+            {
+                x.Components = BuildComponentUnsafe(gameInfo).Build();
+            });
+        }
+
+        public ComponentBuilderV2 BuildComponentUnsafe(GameInstanceInfo gameInfo)
         {
             var builder = new ComponentBuilderV2();
-            builder.WithTextDisplay($"Starting Number: {gameInstanceInfo.InitialNumber}");
+            builder.WithTextDisplay($"Starting Number: {gameInfo.InitialNumber}");
 
-            SocketUser rolledUser = gameInstanceInfo.InitialChallenger;
-            SocketUser whoRollsNext = gameInstanceInfo.WhoRollsNext;
-            if (whoRollsNext == gameInstanceInfo.InitialChallenger) rolledUser = gameInstanceInfo.ChallengedUser;
+            SocketUser rolledUser = gameInfo.InitialChallenger;
+            SocketUser whoRollsNext = gameInfo.WhoRollsNext;
+            if (whoRollsNext == gameInfo.InitialChallenger) rolledUser = gameInfo.ChallengedUser;
 
             PlayerModel winnerDbInfo = null;
             PlayerModel loserDbInfo = null;
 
-            if (gameInstanceInfo.RollHistory.Where(x => x.RolledNumber == 1).Count() == 1) // Lose condition..
+            if (gameInfo.RollHistory.Where(x => x.RolledNumber == 1).Count() == 1) // Lose condition..
             {
-                foreach (Roll roll in gameInstanceInfo.RollHistory)
+                foreach (Roll roll in gameInfo.RollHistory)
                 {
                     var mention = string.Empty;
-                    if (roll.WhoRolled == gameInstanceInfo.InitialChallenger.Id)
-                        mention = gameInstanceInfo.InitialChallenger.Mention;
-                    else if (roll.WhoRolled == gameInstanceInfo.ChallengedUser.Id)
-                        mention = gameInstanceInfo.ChallengedUser.Mention;
+                    if (roll.WhoRolled == gameInfo.InitialChallenger.Id)
+                        mention = gameInfo.InitialChallenger.Mention;
+                    else if (roll.WhoRolled == gameInfo.ChallengedUser.Id)
+                        mention = gameInfo.ChallengedUser.Mention;
                     else
                         mention = $"<@{roll.WhoRolled}>";
 
                     if (roll.RolledNumber == 1)
                     {
-                        gameInstanceInfo.SetState(GameInstanceInfo.GameState.Completed);
+                        gameInfo.SetState(GameState.Completed);
 
                         builder.WithTextDisplay($"{mention} rolled a 1.");
 
                         ulong loser = roll.WhoRolled;
-                        ulong winner = gameInstanceInfo.InitialChallenger.Id == loser ? gameInstanceInfo.ChallengedUser.Id : gameInstanceInfo.InitialChallenger.Id;
+                        ulong winner = gameInfo.InitialChallenger.Id == loser ? gameInfo.ChallengedUser.Id : gameInfo.InitialChallenger.Id;
 
                         winnerDbInfo = _dbDataAccess.GetPlayerByDiscordIdAsync(winner).Result;
                         loserDbInfo = _dbDataAccess.GetPlayerByDiscordIdAsync(loser).Result;
 
-                        winnerDbInfo = UpdatePlayerStats(winnerDbInfo, gameInstanceInfo, didWin: true);
-                        loserDbInfo = UpdatePlayerStats(loserDbInfo, gameInstanceInfo, didWin: false);
+                        winnerDbInfo = UpdatePlayerStats(winnerDbInfo, gameInfo, didWin: true);
+                        loserDbInfo = UpdatePlayerStats(loserDbInfo, gameInfo, didWin: false);
 
                         _dbDataAccess.UpdatePlayerAsync(winnerDbInfo);
                         _dbDataAccess.UpdatePlayerAsync(loserDbInfo);
@@ -515,15 +537,15 @@ namespace DediBotWeb.Services
                 .WithTextDisplay($"{rolledUser.Mention} now has {loserDbInfo.Balance} points.")
                 .WithTextDisplay($"{whoRollsNext.Mention} now has {winnerDbInfo.Balance} points.");
 
-                InstanceInfos.Remove(gameInstanceInfo);
+                GameInstanceInfos.Remove(gameInfo);
             }
             else // Lose condition not met.. continue the game..
             {
                 builder
-                .WithTextDisplay($"{rolledUser.Mention} rolled a {gameInstanceInfo.RollHistory.LastOrDefault().RolledNumber}")
+                .WithTextDisplay($"{rolledUser.Mention} rolled a {gameInfo.RollHistory.LastOrDefault().RolledNumber}")
                 .WithTextDisplay($"{whoRollsNext.Mention}'s turn.")
                 .WithActionRow([
-                    new ButtonBuilder("Roll", customId: $"roll-{gameInstanceInfo.ID}")
+                    new ButtonBuilder("Roll", customId: $"roll-{gameInfo.ID}")
                 ]);
             }
             return builder;
@@ -532,8 +554,9 @@ namespace DediBotWeb.Services
 
         #region HelperMethods
 
-        private void GatherPot(List<PlayerModel> players, int wager, GameInstanceInfo gameInfo)
+        private void CollectWagerFromPlayers(List<PlayerModel> players, GameInstanceInfo gameInfo)
         {
+            var wager = gameInfo.InitialNumber;
             foreach (PlayerModel player in players)
             {
                 player.Balance -= wager;
@@ -559,7 +582,7 @@ namespace DediBotWeb.Services
         public GameInstanceInfo AddInstanceInfo(int startingNumber, SocketUser initialChallenger, SocketUser challengedUser)
         {
             var newInstanceInfo = new GameInstanceInfo(startingNumber, initialChallenger, challengedUser);
-            InstanceInfos.Add(newInstanceInfo);
+            GameInstanceInfos.Add(newInstanceInfo);
             return newInstanceInfo;
         }
 
@@ -568,6 +591,11 @@ namespace DediBotWeb.Services
             await _client.SetStatusAsync(status);
             Console.WriteLine($"Status: {_client.Status}");
 
+        }
+
+        private string GetAction(string customId)
+        {
+            return customId.Split('-')[0];
         }
         public UserStatus GetStatus()
         {
