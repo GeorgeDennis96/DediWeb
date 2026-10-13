@@ -11,8 +11,8 @@ namespace DediBotWeb.Services
     {
         private readonly DiscordSocketClient _client;
         private readonly IPlayerRepo _dbDataAccess;
-        private List<SlashCommand> SlashCommands = new List<SlashCommand>();
-        private static List<GameInstanceInfo> GameInstanceInfos = new List<GameInstanceInfo>();
+        private List<SlashCommand> SlashCommands = new();
+        private static List<GameInstanceInfo> GameInstanceInfos = new(); // Save these in DB if we want to keep track of games when Dedi goes off/on-line?
         private const int DailyRewardAmount = 10000;
         private const int WeekendDailyRewardMultiplier = 2;
 
@@ -51,7 +51,7 @@ namespace DediBotWeb.Services
         #region SlashCommandMethods
         public async Task BuildSlashCommands()
         {
-            if (SlashCommands.Count() == 0)
+            if (SlashCommands.Count == 0)
             {
                 Console.WriteLine("Could not create slash commands because there were none to add.");
                 return;
@@ -81,6 +81,8 @@ namespace DediBotWeb.Services
                     guild.CreateApplicationCommandAsync(slashCommandInitiate.Build());
                 });
             }
+
+            Console.WriteLine("Commands have been created.");
         }
 
         private void DefineSlashCommands()
@@ -108,16 +110,20 @@ namespace DediBotWeb.Services
             deathDiceCommand.AddOption("wager", "The wager & starting amount of the death dice.", ApplicationCommandOptionType.Number, true);
             SlashCommands.Add(deathDiceCommand);
 
+            // Trade points with another user..
             SlashCommand tradeCommand = new SlashCommand("deditrade", "Trade points with another user.", true);
             tradeCommand.AddOption("tradepartner", "The user you wish to trade with.", ApplicationCommandOptionType.User, true);
             tradeCommand.AddOption("amount", "The amount of points you wish to trade.", ApplicationCommandOptionType.Number, true);
             SlashCommands.Add(tradeCommand);
 
+            // Bet on a game..
             SlashCommand betCommand = new SlashCommand("dedibet", "Bet on a game.", true);
             betCommand.AddOption("id", "The game ID.", ApplicationCommandOptionType.String, true);
             betCommand.AddOption("amount", "the amount you would like to bet.", ApplicationCommandOptionType.Integer, true);
+            betCommand.AddOption("user", "the user you are betting to win.", ApplicationCommandOptionType.User, true);
             SlashCommands.Add(betCommand);
 
+            // Display the top 10 ranking players..
             SlashCommand rankingCommand = new SlashCommand("dedirankings", "Display the top 10 ranking players.", true);
             SlashCommands.Add(rankingCommand);
 
@@ -148,30 +154,15 @@ namespace DediBotWeb.Services
                 case "dedirankings":
                     await HandleRankingCommand(command);
                     break;
-                case "dedibet":
-                    await HandleBettingCommand(command);
-                    break;
                 default:
                     await HandleUnkownCommand(command);
                     break;
             }
         }
 
-        private async Task HandleBettingCommand(SocketSlashCommand command)
-        {
-            string gameId = (string)command.Data.Options.Where(x => x.Name == "id").FirstOrDefault().Value;
-            GameInstanceInfo gameInfo = GameInstanceInfos.Where(i => i.ID.ToString() == gameId).FirstOrDefault();
-
-            double amount = (double)command.Data.Options.Where(x => x.Name == "amount").FirstOrDefault().Value;
-            int bet = (int)amount;
-
-
-        }
-
         private async Task HandleRankingCommand(SocketSlashCommand command)
         {
             var builder = new ComponentBuilderV2();
-
             var topPlayers = await _dbDataAccess.GetTopPlayersAsync(10);
 
             for (int i = 0; i < topPlayers.Count; i++)
@@ -233,12 +224,21 @@ namespace DediBotWeb.Services
 
         private async Task HandleRegister(SocketSlashCommand command)
         {
-            await _dbDataAccess.AddPlayerAsync(new PlayerModel() { DiscordId = command.User.Id, Balance = 25000, Username = command.User.Username });
+            //await _dbDataAccess.AddPlayerAsync(new PlayerModel() { DiscordId = command.User.Id, Balance = 25000, Username = command.User.Username });
+            //await command.RespondAsync("You have registered.", ephemeral: true);
 
-            //if (await _dbDataAccess.AddPlayerAsync(new PlayerModel() { DiscordId = command.User.Id, Balance = 25000, Username = command.User.Username }) == 0)
-            //    await command.RespondAsync("You are already registered.", ephemeral: true);
-            //else
-            await command.RespondAsync("You have registered.", ephemeral: true);
+            var guild = _client.Guilds.ToList();
+            await guild.Where(x => x.Id == 1515803945346531358).First().CreateVoiceChannelAsync("DediBot Voice Channel", x =>
+            {
+                x.Bitrate = 64000;
+                x.UserLimit = 2;
+                x.Name = "Date Night";
+                x.PermissionOverwrites = new List<Overwrite>
+                {
+                    new Overwrite(command.User.Id, PermissionTarget.User, new OverwritePermissions(viewChannel: PermValue.Allow)),
+                };
+            });
+
         }
 
         private async Task HandleDailyCommand(SocketSlashCommand command)
@@ -264,7 +264,7 @@ namespace DediBotWeb.Services
                 whoDbModel.DailyClaimedAt = DateTime.Today;
                 await _dbDataAccess.UpdatePlayerAsync(whoDbModel);
                 Console.WriteLine($"{command.User.Username} claimed their daily points.");
-                await command.RespondAsync($"You have claimed your daily points, your balance is now {whoDbModel.Balance}", ephemeral: true);
+                await command.RespondAsync($"You have claimed your daily points of {awardAmount}, your balance is now {whoDbModel.Balance}", ephemeral: true);
             }
         }
         private async Task HandleWhoCommand(SocketSlashCommand command)
@@ -278,13 +278,14 @@ namespace DediBotWeb.Services
                 return;
             }
 
+            bool isInline = true;
             var embed = new EmbedBuilder()
                 .WithTitle($"Stats for {who.Username}")
-                .AddField("Wins", whoDbModel.Wins, true)
-                .AddField("Losses", whoDbModel.Losses, true)
-                .AddField("Total Games Played", whoDbModel.TotalGamesPlayed, true)
-                .AddField("Win Rate", $"{whoDbModel.WinRate}%", true)
-                .AddField("Balance", whoDbModel.Balance, true)
+                .AddField("Wins", whoDbModel.Wins, isInline)
+                .AddField("Losses", whoDbModel.Losses, isInline)
+                .AddField("Total Games Played", whoDbModel.TotalGamesPlayed, isInline)
+                .AddField("Win Rate", $"{whoDbModel.WinRate}%", isInline)
+                .AddField("Balance", whoDbModel.Balance, isInline)
                 .WithThumbnailUrl(who.GetAvatarUrl() ?? who.GetDefaultAvatarUrl())
                 .WithColor(Color.Default);
 
@@ -347,16 +348,17 @@ namespace DediBotWeb.Services
                 return;
             }
 
-            var builder = new ComponentBuilderV2();
             var AcceptChallengeButton = new ButtonBuilder("Accept", customId: gameInfo.AcceptButtonID);
             var declineChallengeButton = new ButtonBuilder("Decline", customId: gameInfo.DeclineButtonID);
+            var bettingButton = new ButtonBuilder("Bet", customId: gameInfo.BettingButtonID);
 
+            var builder = new ComponentBuilderV2();
             builder
             .WithTextDisplay($"Game ID: {gameInfo.ID}")
             .WithTextDisplay($"{initialUser.Mention} has challenged {challenegedUser.Mention} to a death dice!")
             .WithTextDisplay($"Starting Number: {gameInfo.InitialNumber}")
             .WithActionRow([
-                AcceptChallengeButton, declineChallengeButton
+                AcceptChallengeButton, declineChallengeButton, bettingButton
                 ]);
 
             await command.RespondAsync(components: builder.Build());
@@ -369,15 +371,30 @@ namespace DediBotWeb.Services
             switch (arg)
             {
                 case SocketMessageComponent component:
-
                     await HandleMessageComponent(component);
                     break;
                 case SocketModal modal:
-                    // Interaction came from a modal
+                    await HandleModalComponent(modal);
                     break;
                 default:
                     return;
             }
+        }
+
+        private async Task HandleModalComponent(SocketModal modal)
+        {
+            GameInstanceInfo? gameInfo = GameInstanceInfos.Where(i => i.ModalID == modal.Data.CustomId).FirstOrDefault();
+            SocketUser user = modal.User;
+
+
+            if (gameInfo is null)
+            {
+                await modal.RespondAsync("Could not find game, aborting..", ephemeral: true);
+                return;
+            }
+
+
+
         }
 
         private async Task HandleMessageComponent(SocketMessageComponent component)
@@ -391,19 +408,39 @@ namespace DediBotWeb.Services
                 case "accept":
                     await HandleAccept(component, customId);
                     break;
-
                 case "decline":
                     await HandleDecline(component, customId);
                     break;
-
                 case "roll":
                     await HandleRoll(component, customId);
                     break;
-
+                case "bet":
+                    await HandleBet(component, customId);
+                    break;
                 default:
                     await component.RespondAsync("Unknown interaction.", ephemeral: true);
                     break;
             }
+        }
+
+        private async Task HandleBet(SocketMessageComponent component, string customId)
+        {
+            SocketUser user = component.User;
+            var userModel = await _dbDataAccess.GetPlayerByDiscordIdAsync(user.Id);
+
+            var gameInfo = GameInstanceInfos.Where(i => i.BettingButtonID == customId).FirstOrDefault();
+
+            var optionsList = new List<SelectMenuOptionBuilder>();
+            optionsList.Add(new SelectMenuOptionBuilder { Label = $"{gameInfo.InitialChallenger.Username}", Value = $"{gameInfo.InitialChallenger.Id}" });
+            optionsList.Add(new SelectMenuOptionBuilder { Label = $"{gameInfo.ChallengedUser.Username}", Value = $"{gameInfo.ChallengedUser.Id}" });
+
+            var mb = new ModalBuilder()
+            .WithTitle("Place your bets!")
+            .WithCustomId(gameInfo.ModalID)
+            .AddSelectMenu("Select a user to bet on", "bet_user_select", options: optionsList)
+            .AddTextInput("Bet amount", "bet_amount", placeholder: "5000", style: TextInputStyle.Short);
+
+            await component.RespondWithModalAsync(mb.Build());
         }
 
         private async Task HandleRoll(SocketMessageComponent component, string customId)
@@ -474,7 +511,6 @@ namespace DediBotWeb.Services
 
             gameInfo.SetState(GameState.InProgress);
             CollectWagerFromPlayers(players, gameInfo);
-
             gameInfo.AddRollHistory(gameInfo.InitialNumber, component.User.Id);
 
             // Update the component..
@@ -486,6 +522,8 @@ namespace DediBotWeb.Services
 
         public ComponentBuilderV2 BuildComponentUnsafe(GameInstanceInfo gameInfo)
         {
+            // This logic can probably be simplified, but for now it works.. I will refactor later..
+
             var builder = new ComponentBuilderV2();
             builder.WithTextDisplay($"Starting Number: {gameInfo.InitialNumber}");
 
@@ -581,16 +619,14 @@ namespace DediBotWeb.Services
 
         public GameInstanceInfo AddInstanceInfo(int startingNumber, SocketUser initialChallenger, SocketUser challengedUser)
         {
-            var newInstanceInfo = new GameInstanceInfo(startingNumber, initialChallenger, challengedUser);
-            GameInstanceInfos.Add(newInstanceInfo);
-            return newInstanceInfo;
+            GameInstanceInfos.Add(new GameInstanceInfo(startingNumber, initialChallenger, challengedUser));
+            return GameInstanceInfos.Last();
         }
 
         public async Task SetStatus(UserStatus status)
         {
             await _client.SetStatusAsync(status);
             Console.WriteLine($"Status: {_client.Status}");
-
         }
 
         private string GetAction(string customId)

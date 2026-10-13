@@ -6,16 +6,19 @@ namespace DediBotWeb.Common.Models
     public class GameInstanceInfo
     {
         public Guid ID { get; private set; } = Guid.NewGuid();
-        public string AcceptButtonID { get; set; } = $"accept-{Guid.NewGuid()}";
-        public string DeclineButtonID { get; set; } = $"decline-{Guid.NewGuid()}";
+        public string AcceptButtonID { get; private set; } = $"accept-{Guid.NewGuid()}";
+        public string DeclineButtonID { get; private set; } = $"decline-{Guid.NewGuid()}";
+        public string BettingButtonID { get; private set; } = $"bet-{Guid.NewGuid()}";
+        public string ModalID { get; private set; } = $"modal-{Guid.NewGuid()}";
         public SocketUser InitialChallenger { get; private set; }
         public SocketUser ChallengedUser { get; private set; }
         public int InitialNumber { get; private set; }
         public SocketUser WhoRollsNext { get; private set; }
-        public List<Roll> RollHistory { get; private set; } = new List<Roll>();
+        public List<Roll> RollHistory { get; private set; } = new();
         public int PotentialWinnings { get; private set; }
         public int BetWinnings { get; private set; }
         public GameState State { get; private set; } = GameState.Pending;
+        public List<BetInfo> BetInfos { get; private set; } = new();
 
         public GameInstanceInfo(int initialNumber, SocketUser initialChallenger, SocketUser challengedUser)
         {
@@ -50,7 +53,6 @@ namespace DediBotWeb.Common.Models
         public void SetState(GameState newState)
         {
             State = newState;
-
             Console.WriteLine($"Game {ID} state changed to {State}.");
         }
 

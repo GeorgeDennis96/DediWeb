@@ -15,7 +15,6 @@ namespace DediBotWeb.Common.Models
             Amount = amount;
             Bettor = bettor;
 
-
         }
     }
 }
