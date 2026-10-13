@@ -27,3 +27,6 @@ Loser is whoever hits the number 1.
 - A leaderboard/ranking system to track the top players and their points.
 
   Invite Dedi to your server by following this link: [Invite](https://discord.com/oauth2/authorize?client_id=1474094680760385697&permissions=2112&integration_type=0&scope=bot)
+
+## SETUP
+- TBC
